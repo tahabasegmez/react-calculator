@@ -16,7 +16,7 @@ frontend only handles input and display, so `0.1 + 0.2` is exactly `0.3`.
 [API](#api-reference) ·
 [Architecture](#architecture) ·
 [Design decisions](#design-decisions) ·
-[Deviations & limitations](#assumptions-deviations-from-windows-and-known-limitations) ·
+[Assumptions & limitations](#assumptions-deviations-from-windows-and-known-limitations) ·
 [Future work](#trade-offs--future-work) ·
 [AI usage](#ai-usage)
 
