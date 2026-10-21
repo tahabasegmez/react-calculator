@@ -1,0 +1,217 @@
+openapi: 3.1.0
+info:
+  title: Calculator API
+  version: 1.0.0
+  description: |
+    Performs one calculator operation per request. Numbers are sent and returned as JSON strings.
+
+    All errors, including 404 (`NOT_FOUND`) for unknown paths, use the `ErrorResponse` format.
+    `docs/SPEC.md` takes precedence over this file.
+servers:
+  - url: /
+    description: Same origin as the frontend (proxied to the backend)
+security: []
+
+paths:
+  /api/v1/calculate:
+    post:
+      operationId: calculate
+      summary: Perform one operation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculateRequest'
+            examples:
+              add:
+                summary: Decimal addition
+                value: { operation: add, operands: ['0.1', '0.2'] }
+              sqrt:
+                summary: Unary operation
+                value: { operation: sqrt, operands: ['9'] }
+              divideByZero:
+                summary: Division by zero
+                value: { operation: divide, operands: ['1', '0'] }
+      responses:
+        '200':
+          description: The result of the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculateResponse'
+              examples:
+                add:
+                  value: { operation: add, result: '0.3' }
+        '400':
+          description: |
+            The request is wrong: `INVALID_JSON`, `VALIDATION_ERROR`, `INVALID_NUMBER`,
+            `UNSUPPORTED_OPERATION`, or `INVALID_OPERAND_COUNT`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidNumber:
+                  value: { error: { code: INVALID_NUMBER, message: 'Operand 1 is not a valid number' } }
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '413':
+          description: The request body exceeds 4 KiB (`PAYLOAD_TOO_LARGE`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '415':
+          description: The `Content-Type` is not `application/json` (`UNSUPPORTED_MEDIA_TYPE`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: |
+            The request is well-formed but mathematically undefined: `DIVISION_BY_ZERO`,
+            `UNDEFINED_RESULT`, `INVALID_DOMAIN`, or `OVERFLOW`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                divisionByZero:
+                  value: { error: { code: DIVISION_BY_ZERO, message: Cannot divide by zero } }
+                undefinedResult:
+                  value: { error: { code: UNDEFINED_RESULT, message: Result is undefined } }
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /healthz:
+    get:
+      operationId: healthCheck
+      summary: Health check
+      responses:
+        '200':
+          description: The service is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                additionalProperties: false
+                properties:
+                  status:
+                    type: string
+                    const: ok
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  schemas:
+    Number:
+      type: string
+      description: |
+        A decimal number. Input: optional `-`, digits with an optional fraction, and an optional
+        exponent; at most 100 characters; the adjusted exponent must be within [-9999, 9999].
+        Operands with more than 34 significant digits are rounded to 34 (half away from zero).
+      pattern: '^-?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$'
+      maxLength: 100
+      examples: ['12', '-0.5', '12.', '.5', '-0.', '1.2e+20', '1E-5']
+
+    Result:
+      type: string
+      description: |
+        A decimal number rounded to 34 significant digits, half away from zero. No trailing
+        zeros in the fraction; `-0` is returned as `0`. Plain notation when the adjusted exponent
+        is between -20 and 33, otherwise scientific notation with a lowercase `e` and an explicit
+        sign. Results below the exponent range underflow to `0`.
+      examples: ['0.3', '100', '1.5e+40', '2e-25']
+
+    Operation:
+      type: string
+      enum: [add, subtract, multiply, divide, percent, percent_of, sqrt, square, reciprocal]
+      description: |
+        | Operation | Arity | Formula | Errors |
+        |---|---|---|---|
+        | `add` | 2 | a + b | `OVERFLOW` |
+        | `subtract` | 2 | a − b | `OVERFLOW` |
+        | `multiply` | 2 | a × b | `OVERFLOW` |
+        | `divide` | 2 | a ÷ b | `DIVISION_BY_ZERO` (b = 0, a ≠ 0), `UNDEFINED_RESULT` (0 ÷ 0), `OVERFLOW` |
+        | `percent` | 1 | b ÷ 100 | — |
+        | `percent_of` | 2 | a × b ÷ 100 | `OVERFLOW` |
+        | `sqrt` | 1 | √a | `INVALID_DOMAIN` (negative input) |
+        | `square` | 1 | a² | `OVERFLOW` |
+        | `reciprocal` | 1 | 1 ÷ a | `DIVISION_BY_ZERO`, `OVERFLOW` |
+
+    CalculateRequest:
+      type: object
+      required: [operation, operands]
+      additionalProperties: false
+      properties:
+        operation:
+          $ref: '#/components/schemas/Operation'
+        operands:
+          type: array
+          description: |
+            The number of operands must equal the operation's arity; otherwise the response is
+            `INVALID_OPERAND_COUNT`.
+          items:
+            $ref: '#/components/schemas/Number'
+
+    CalculateResponse:
+      type: object
+      required: [operation, result]
+      additionalProperties: false
+      properties:
+        operation:
+          $ref: '#/components/schemas/Operation'
+        result:
+          $ref: '#/components/schemas/Result'
+
+    ErrorCode:
+      type: string
+      enum:
+        - INVALID_JSON
+        - VALIDATION_ERROR
+        - INVALID_NUMBER
+        - UNSUPPORTED_OPERATION
+        - INVALID_OPERAND_COUNT
+        - NOT_FOUND
+        - METHOD_NOT_ALLOWED
+        - PAYLOAD_TOO_LARGE
+        - UNSUPPORTED_MEDIA_TYPE
+        - DIVISION_BY_ZERO
+        - UNDEFINED_RESULT
+        - INVALID_DOMAIN
+        - OVERFLOW
+        - INTERNAL_ERROR
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          additionalProperties: false
+          properties:
+            code:
+              $ref: '#/components/schemas/ErrorCode'
+            message:
+              type: string
+              description: For developers. Clients select the UI text from `code`.
+
+  responses:
+    MethodNotAllowed:
+      description: Wrong HTTP method (`METHOD_NOT_ALLOWED`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Unexpected error (`INTERNAL_ERROR`). Details are logged only.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

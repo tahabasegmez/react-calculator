@@ -68,10 +68,10 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 Full-stack calculator: Go backend + React/TypeScript frontend.
 Behavior reference: Windows 11 Calculator, Standard mode. On mobile, only the layout changes;
-behavior is the same on every device (D-24). Deliberate deviations from Windows are recorded as D-xx.
+behavior is the same on every device (D-23). Deliberate deviations from Windows are recorded as D-xx.
 
 `docs/SPEC.md` is the source of truth for requirements (FR/BR/NFR), design decisions (D-xx),
-the API contract, and the PR plan. Read the relevant sections before starting a task.
+the API contract, and the implementation plan. Read the relevant sections before starting a task.
 If a request conflicts with the spec, stop and ask instead of guessing.
 
 # Hard rules
@@ -81,19 +81,20 @@ If a request conflicts with the spec, stop and ask instead of guessing.
   Display rounding to 16 digits is the only exception; the stored raw value is never changed (D-03).
 - Numbers are JSON strings in the formats defined in SPEC §8. The backend uses `cockroachdb/apd`
   with 34 significant digits, rounding half away from zero, and an exponent range of ±9999
-  (D-04, D-06, D-11, D-22).
-- docs/SPEC.md takes precedence over docs/openapi.yaml; keep both consistent in the same PR (D-25).
+  (D-04, D-06, D-11, D-21).
+- docs/SPEC.md takes precedence over docs/openapi.yaml; keep both consistent in the same commit (D-24).
 - If a design decision changes during implementation, do not edit the old entry silently:
   add a new D-xx entry to docs/SPEC.md explaining what changed and why.
 - All errors use `{ "error": { "code": "...", "message": "..." } }`, including 404 and 405 (BR-05).
 - Minimal dependencies. Backend: `net/http`, no web framework. Go tests: standard `testing` only.
   Ask before adding any new dependency.
 - Everything is in English: code, comments, UI text, docs, commit messages.
+- PROMPTS.md is written by the developer. Never create, edit, or delete it.
 - Comments must be short and simple, do not refer any document or decision in a comment.
   Test names describe the behavior and do not contain requirement or decision IDs.
-- Never run `git commit`, `git push`, or `gh pr create`. The developer does all of these.
+- Never run `git commit` or `git push`. The developer does both.
   When a task is done, suggest a one-line Conventional Commits message, without a body.
-  When a PR is ready, also suggest a PR title and a description based on the Definition of Done in SPEC §12.
+  When a step of SPEC §12 is complete, check it against the Definition of Done in SPEC §12.
 
 # Commands
 
@@ -105,7 +106,7 @@ If a request conflicts with the spec, stop and ask instead of guessing.
 
 # Workflow
 
-- One feature branch per PR (see SPEC §12). Conventional Commits: `feat:`, `fix:`, `test:`, `docs:`, `chore:`, `ci:`.
+- All work is committed directly to `main`; there are no branches (see SPEC §12). Conventional Commits: `feat:`, `fix:`, `test:`, `docs:`, `chore:`, `ci:`.
 - Keep changes in small, logical steps, and say where a commit boundary makes sense.
 - Write tests first for operations, the reducer, and `format.ts`.
 - Before saying a task is done: run tests and lint, and show the actual output.
