@@ -16,6 +16,12 @@ function variant(label: string): string {
   if (label === '=') {
     return keyStyles.equals
   }
+  if (label === 'C') {
+    return keyStyles.clear
+  }
+  if (['÷', '×', '−', '+'].includes(label)) {
+    return keyStyles.operator
+  }
   return /^[\d.]$|^\+\/-$/.test(label) ? keyStyles.digit : keyStyles.function
 }
 

@@ -16,13 +16,14 @@
   min-height: 7.5rem;
   padding: 0.75rem 0.5rem;
   font-size: 2.5rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .keypad {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+  gap: 8px;
+  padding-top: 8px;
 }
 
 .key {
@@ -40,4 +41,5 @@
   color: var(--text);
   font-size: 2.5rem;
   font-weight: 700;
+  text-shadow: 0 2px 16px rgb(32 23 51 / 0.8);
 }

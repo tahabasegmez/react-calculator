@@ -13,8 +13,8 @@ const digit = (d: Digit): KeypadKey<Key> => ({
 /** Standard mode keys, row by row, four per row. */
 export const standardKeypad: KeypadKey<Key>[] = [
   { label: '%', ariaLabel: 'percent', action: { type: 'percent' }, variant: 'function' },
-  { label: 'CE', ariaLabel: 'clear entry', action: { type: 'clearEntry' }, variant: 'function' },
-  { label: 'C', ariaLabel: 'clear', action: { type: 'clear' }, variant: 'function' },
+  { label: 'CE', ariaLabel: 'clear entry', action: { type: 'clearEntry' }, variant: 'clear' },
+  { label: 'C', ariaLabel: 'clear', action: { type: 'clear' }, variant: 'clear' },
   { label: '⌫', ariaLabel: 'backspace', action: { type: 'backspace' }, variant: 'function' },
 
   {

@@ -1,5 +1,6 @@
 .keypad {
   display: grid;
   grid-template-columns: repeat(var(--columns), 1fr);
-  gap: 4px;
+  gap: 8px;
+  padding-top: 8px;
 }

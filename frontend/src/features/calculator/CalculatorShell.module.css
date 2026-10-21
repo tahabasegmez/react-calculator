@@ -1,12 +1,45 @@
 .calculator {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   width: 100%;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  background: var(--surface);
+  padding: 8px 12px 12px;
+  color: var(--text);
+  background: linear-gradient(
+    165deg,
+    var(--purple-dark) 0%,
+    var(--purple-dark) 60%,
+    var(--purple-deep) 100%
+  );
+}
+
+/* Soft glows behind the keypad; the frosted-glass keys blur them. */
+.calculator::before,
+.calculator::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+.calculator::before {
+  width: 260px;
+  height: 260px;
+  right: -60px;
+  bottom: 120px;
+  background: rgb(131 51 212 / 0.4);
+}
+
+.calculator::after {
+  width: 200px;
+  height: 200px;
+  left: -50px;
+  bottom: -40px;
+  background: rgb(159 244 217 / 0.15);
 }
 
 .toolbar {
@@ -34,7 +67,7 @@
     width: 360px;
     min-height: auto;
     margin: 2rem auto;
-    border: 1px solid var(--key-border);
-    border-radius: 8px;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgb(32 23 51 / 0.35);
   }
 }

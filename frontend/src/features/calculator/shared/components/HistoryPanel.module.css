@@ -1,7 +1,7 @@
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 0.25);
+  background: rgb(0 0 0 / 0.35);
 }
 
 .panel {
@@ -12,10 +12,13 @@
   height: 75%;
   display: flex;
   flex-direction: column;
-  padding: 0.75rem;
-  background: var(--surface);
-  border-top: 1px solid var(--key-border);
-  border-radius: 12px 12px 0 0;
+  padding: 1rem;
+  color: var(--text);
+  background: var(--overlay);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid var(--overlay-border);
+  border-radius: 20px 20px 0 0;
   animation: slide-up 0.2s ease-out;
 }
 
@@ -63,9 +66,9 @@
   align-items: flex-end;
   width: 100%;
   min-height: 44px;
-  padding: 0.5rem;
+  padding: 0.5rem 0.75rem;
   border: 0;
-  border-radius: 6px;
+  border-radius: 12px;
   background: transparent;
   color: var(--text);
   font: inherit;
@@ -74,7 +77,7 @@
 }
 
 .entry:hover {
-  background: var(--key-function);
+  background: var(--hover);
 }
 
 .entry:focus-visible,
@@ -84,14 +87,14 @@
 }
 
 .expression {
-  color: var(--text-muted);
+  color: var(--text-accent);
   font-size: 0.875rem;
   overflow-wrap: anywhere;
 }
 
 .result {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
@@ -103,12 +106,12 @@
   height: 44px;
   margin-top: 0.5rem;
   border: 0;
-  border-radius: 6px;
+  border-radius: 999px;
   background: transparent;
   color: var(--text);
   cursor: pointer;
 }
 
 .clear:hover {
-  background: var(--key-function);
+  background: var(--hover);
 }

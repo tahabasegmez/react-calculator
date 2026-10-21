@@ -1,16 +1,51 @@
+/* Plus Jakarta Sans, SIL Open Font License 1.1 (see assets/fonts/OFL.txt). */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('./assets/fonts/plus-jakarta-sans-latin-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('./assets/fonts/plus-jakarta-sans-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('./assets/fonts/plus-jakarta-sans-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
 
-  --surface: #f3f3f3;
-  --text: #1a1a1a;
-  --text-muted: #555555;
-  --key-digit: #ffffff;
-  --key-function: #e6e6e6;
-  --key-border: #cfcfcf;
-  --accent: #0a5fb4;
-  --accent-text: #ffffff;
-  --focus: #0a5fb4;
+  /* Palette */
+  --purple: #8333d4;
+  --purple-dark: #201733;
+  --purple-deep: #2e1a4d;
+  --lavender: #f2e6ff;
+  --mint: #9ff4d9;
+  --red: #ff5667;
+  --page: #f8f8f8;
+
+  /* Roles on the dark calculator surface */
+  --text: #ffffff;
+  --text-muted: var(--lavender);
+  --text-accent: var(--mint);
+  --text-on-bright: var(--purple-dark);
+  --focus: var(--mint);
+  --glass-border: rgb(255 255 255 / 0.16);
+  --hover: rgb(255 255 255 / 0.1);
+  --overlay: rgb(32 23 51 / 0.92);
+  --overlay-border: rgb(131 51 212 / 0.45);
 }
 
 *,
@@ -21,8 +56,8 @@
 
 body {
   margin: 0;
-  color: var(--text);
-  background: var(--surface);
+  color: var(--purple-dark);
+  background: var(--page);
 }
 
 .visually-hidden {

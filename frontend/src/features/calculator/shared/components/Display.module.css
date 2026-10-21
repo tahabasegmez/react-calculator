@@ -9,7 +9,8 @@
 
 .expression {
   min-height: 1.5em;
-  color: var(--text-muted);
+  color: var(--text-accent);
+  font-weight: 500;
   font-size: 1rem;
   overflow-wrap: anywhere;
 }
@@ -18,8 +19,9 @@
   /* Fixed height in rem, so smaller font sizes do not move the keypad. */
   min-height: 3rem;
   font-size: 2.5rem;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 3rem;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 

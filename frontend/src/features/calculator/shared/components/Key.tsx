@@ -1,6 +1,6 @@
 import styles from './Key.module.css'
 
-export type KeyVariant = 'digit' | 'function' | 'operator' | 'equals'
+export type KeyVariant = 'digit' | 'function' | 'operator' | 'clear' | 'equals'
 
 type KeyProps = {
   label: string

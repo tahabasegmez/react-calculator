@@ -20,6 +20,7 @@ The full specification, including every requirement and design decision, is in
 - The display font shrinks for long numbers.
 - A mode menu (top left) switches to a preview of Scientific mode, marked "Soon..".
 - Works from 320 px wide; same behavior on every device.
+- Dark purple design with frosted-glass keys; every label meets WCAG AA contrast.
 
 ## Quick start
 
@@ -173,6 +174,11 @@ The full list with rationale is in [SPEC §6](docs/SPEC.md#6-design-decisions). 
 - Could-have features not built yet: memory keys, dark theme, a live demo. The history is kept
   in memory only, so it is lost on reload.
 - Keys are blocked during a request rather than queued; partial blocking is future work.
+
+## Credits
+
+The font is [Plus Jakarta Sans](https://github.com/tokotype/PlusJakartaSans), used under the
+SIL Open Font License 1.1 ([frontend/src/assets/fonts/OFL.txt](frontend/src/assets/fonts/OFL.txt)).
 
 ## AI usage
 
