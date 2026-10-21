@@ -151,6 +151,7 @@ NFRs are cross-cutting: unless stated otherwise, every step of the implementatio
 | D-22 | Display notation: let `v` be the value rounded to 16 significant digits. `0` is shown as `0`. If `1e-7 ≤ |v| < 1e16`, plain notation; otherwise scientific notation `m.mmme±n` (e.g. `1.2e+20`, `1.5e-8`). Trailing zeros of the fraction and mantissa are removed. | A simple, testable rule. The upper bound matches the 16 displayed digits; the lower bound keeps small numbers readable. Windows uses a more complex rule, so small numbers may be displayed differently. |
 | D-23 | Mobile devices change only the layout; behavior follows Windows on every device. | One behavioral reference. Mobile calculators such as the iPhone's use operator precedence; mixing references would make the same key sequence give different results on different devices. |
 | D-24 | `docs/SPEC.md` takes precedence over `docs/openapi.yaml`. A discrepancy is a bug fixed in both files in the same commit. | One source of truth. |
+| D-25 | HTTP request checks run in this order; the first failing check decides the response: unknown path (404) → wrong method (405) → `Content-Type` (415) → body size (413) → JSON syntax (`INVALID_JSON`) → fields and types (`VALIDATION_ERROR`) → operation name → operand count → operand format → calculation. `Content-Type` is compared by media type, so parameters such as `charset=utf-8` are accepted. When `ALLOWED_ORIGIN` is set, a CORS preflight (`OPTIONS` with `Access-Control-Request-Method`) gets 204 before routing; otherwise `OPTIONS` gets 405. | Cheap checks run first, and every request gets exactly one deterministic error that tests can rely on. Many clients send a `charset` parameter. Answering preflight before routing keeps CORS independent of the routes. |
 
 ---
 
@@ -329,7 +330,7 @@ Results below the exponent range underflow to `"0"` without an error (D-21).
 
 Rule: 400-range = "the request is wrong"; 422 = "the request is well-formed but mathematically undefined".
 HTTP-level details (order of checks when a request has several faults, `Content-Type` parameters such as
-`charset`, CORS preflight handling) are decided and tested in step 3 (§12).
+`charset`, CORS preflight handling) follow D-25.
 
 ---
 
@@ -600,7 +601,7 @@ Cross-cutting NFRs (§4) apply to every step and are not listed per row.
 | 0 | Project scaffold | Hygiene files, folder structure, `docs/SPEC.md`, `CLAUDE.md`, README stub | §11 |
 | 1 | API contract | `docs/openapi.yaml` from §8 | BR-01–08, D-24 |
 | 2 | Backend operations | Verify the apd API first; operation interface, registry, 9 operations, number format, table-driven tests; CI with backend job | BR-02–04, BR-07 (calculation level), NFR-01–02, D-11, D-20, D-21 |
-| 3 | Backend HTTP | Handler, error format (incl. 404/405), middleware, `/healthz`, `-healthcheck` flag, env config, `slog`, fuzz test | BR-05–08, BR-07 (HTTP level), NFR-06, NFR-16 |
+| 3 | Backend HTTP | Handler, error format (incl. 404/405), middleware, `/healthz`, `-healthcheck` flag, env config, `slog`, fuzz test | BR-05–08, BR-07 (HTTP level), NFR-06, NFR-16, D-25 |
 | 4 | Frontend setup | Vite + TS strict, ESLint, Prettier, Vitest (with coverage exclusions and an `App` smoke test), dev proxy; CI frontend job | NFR-09, NFR-17, D-18 |
 | 5 | Frontend logic | `format.ts`, API client, reducer (test-first from §9) | FR-01–11, FR-17–19, D-12, D-13, D-20, D-21, D-22 |
 | 6 | Frontend UI | Components, `useCalculator`, keyboard, accessibility, responsive styles | FR-07–08, FR-12–13, NFR-08 |

@@ -7,6 +7,15 @@ info:
 
     All errors, including 404 (`NOT_FOUND`) for unknown paths, use the `ErrorResponse` format.
     `docs/SPEC.md` takes precedence over this file.
+
+    When a request has several faults, the first failing check decides the response, in this order:
+    unknown path (404), wrong method (405), `Content-Type` (415), body size (413), JSON syntax
+    (`INVALID_JSON`), fields and types (`VALIDATION_ERROR`), operation name, operand count,
+    operand format, calculation.
+
+    CORS is disabled unless the server is configured with an allowed origin. Then a preflight
+    `OPTIONS` request with `Access-Control-Request-Method` is answered with 204; otherwise
+    `OPTIONS` gets 405.
 servers:
   - url: /
     description: Same origin as the frontend (proxied to the backend)
@@ -63,7 +72,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '415':
-          description: The `Content-Type` is not `application/json` (`UNSUPPORTED_MEDIA_TYPE`).
+          description: |
+            The media type of `Content-Type` is not `application/json` (`UNSUPPORTED_MEDIA_TYPE`).
+            Parameters such as `charset=utf-8` are accepted.
           content:
             application/json:
               schema:
