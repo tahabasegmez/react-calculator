@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 775" width="1400" height="775" role="img" aria-labelledby="graph-title">
+    <title id="graph-title">Calculator architecture: React frontend, nginx edge, Go backend</title>
+    <rect width="1400" height="775" fill="#ffffff" />
+    <style>
+      text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #1d2433; }
+      .lane-title { font-size: 14px; font-weight: 700; }
+      .node-title { font-size: 13px; font-weight: 700; }
+      .node-sub { font-size: 11px; fill: #5b6475; }
+      .edge-label { font-size: 10.5px; fill: #5b6475; }
+      .legend { font-size: 11px; fill: #5b6475; }
+    </style>
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#6b7385" />
+      </marker>
+    </defs>
+
+    <!-- Lanes -->
+    <rect x="20" y="20" width="560" height="700" rx="14" fill="#f3f0fb" stroke="#d9d0f0" />
+    <text class="lane-title" x="40" y="48">Frontend · React 19 + TypeScript (runs in the browser)</text>
+    <rect x="600" y="20" width="180" height="700" rx="14" fill="#eef6f3" stroke="#cfe6dc" />
+    <text class="lane-title" x="620" y="48">Edge · nginx</text>
+    <rect x="800" y="20" width="580" height="700" rx="14" fill="#eef3fb" stroke="#cfdcf0" />
+    <text class="lane-title" x="820" y="48">Backend · Go 1.27, net/http, apd</text>
+    
+
+    <!-- Edges (drawn first, under the nodes) -->
+    <g fill="none" stroke="#6b7385" stroke-width="1.5" marker-end="url(#arrow)">
+      <path d="M160 125 V158" />
+      <path d="M280 195 H303" />
+      <path d="M435 225 V240 H160 V248" />
+      <path d="M435 225 V248" stroke-dasharray="5 4" />
+      <path d="M160 315 V338" />
+      <path d="M280 290 H295 V375 H303" />
+      <path d="M160 405 V428" />
+      <path d="M160 495 V518" />
+      <path d="M280 465 H303" />
+      <path d="M330 495 V510 H270 V518" />
+      <path d="M40 375 H25 V667 H33" />
+      <path d="M280 665 H608" />
+      <path d="M690 600 V200 H813" />
+      <path d="M1090 125 V158" />
+      <path d="M1090 225 V248" />
+      <path d="M820 200 H808 V555 H813" />
+      <path d="M950 315 V338" />
+      <path d="M1080 375 H1093" />
+      <path d="M1230 405 V428" />
+      <path d="M950 405 V428" />
+      <path d="M1230 495 V518" />
+      <path d="M1070 495 V510 H1115 V518" />
+      <path d="M560 285 H572 V555 H567" stroke-dasharray="5 4" />
+    </g>
+    <text class="edge-label" x="168" y="146">renders</text>
+    <text class="edge-label" x="286" y="186">lists</text>
+    <text class="edge-label" x="442" y="244">mounts on first visit</text>
+    <text class="edge-label" x="290" y="653">POST /api/v1/calculate</text>
+    <text class="edge-label" x="290" y="684">JSON, numbers as strings</text>
+    <text class="edge-label" x="698" y="190">proxy /api, /healthz</text>
+    <text class="edge-label" x="1098" y="146">wires</text>
+        
+    <!-- Frontend nodes -->
+    <g>
+      <rect x="40" y="75" width="240" height="50" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="54" y="97">App / main.tsx</text>
+      <text class="node-sub" x="54" y="114">renders the shell with the mode list</text>
+
+      <rect x="40" y="165" width="240" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="54" y="187">CalculatorShell</text>
+      <text class="node-sub" x="54" y="204">toolbar · ModeMenu · active mode</text>
+      <text class="node-sub" x="54" y="218">keep-alive: hidden modes stay mounted</text>
+
+      <rect x="310" y="165" width="250" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="324" y="187">modes.ts</text>
+      <text class="node-sub" x="324" y="204">{ id, label, Component } list</text>
+      <text class="node-sub" x="324" y="218">only file that names concrete modes</text>
+
+      <rect x="40" y="255" width="240" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="54" y="277">StandardCalculator</text>
+      <text class="node-sub" x="54" y="294">shortcuts · History button (portal)</text>
+      <text class="node-sub" x="54" y="308">HistoryPanel · inert while open</text>
+
+      <rect x="310" y="255" width="250" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="324" y="277">ScientificCalculator</text>
+      <text class="node-sub" x="324" y="294">static, blurred keypad preview</text>
+      <text class="node-sub" x="324" y="308">“Soon..” · no logic, no shortcuts</text>
+
+      <rect x="40" y="345" width="240" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="54" y="367">useCalculator (hook)</text>
+      <text class="node-sub" x="54" y="384">planRequest → API → succeeded/failed</text>
+      <text class="node-sub" x="54" y="398">in-flight guard · 300 ms loading hint</text>
+
+      <rect x="310" y="345" width="250" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="324" y="367">keyboard.ts · keypadLayout.ts</text>
+      <text class="node-sub" x="324" y="384">Windows shortcut map</text>
+      <text class="node-sub" x="324" y="398">24 keys as data (Keypad&lt;Action&gt;)</text>
+
+      <rect x="40" y="435" width="240" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="54" y="457">reducer.ts (pure)</text>
+      <text class="node-sub" x="54" y="474">one keyStep: local change, or</text>
+      <text class="node-sub" x="54" y="488">request + how to apply the result</text>
+
+      <rect x="310" y="435" width="250" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="324" y="457">selectors.ts</text>
+      <text class="node-sub" x="324" y="474">display text · error texts</text>
+      <text class="node-sub" x="324" y="488">which keys are disabled</text>
+
+      <rect x="40" y="525" width="240" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="54" y="547">utils/format.ts</text>
+      <text class="node-sub" x="54" y="564">string-based, never a float</text>
+      <text class="node-sub" x="54" y="578">16 digits · half away from zero</text>
+
+      <rect x="310" y="525" width="250" height="60" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="324" y="547">shared/</text>
+      <text class="node-sub" x="324" y="564">Display · Keypad · Key · HistoryPanel</text>
+      <text class="node-sub" x="324" y="578">ModeMenu · mode contract (ESLint-guarded)</text>
+
+      <rect x="40" y="635" width="240" height="65" rx="10" fill="#fff" stroke="#b9acd9" />
+      <text class="node-title" x="54" y="657">api/client.ts</text>
+      <text class="node-sub" x="54" y="674">fetch · 5 s timeout · never throws</text>
+      <text class="node-sub" x="54" y="688">5xx / non-JSON → NETWORK_ERROR</text>
+    </g>
+
+    <!-- Edge node -->
+    <g>
+      <rect x="615" y="600" width="150" height="110" rx="10" fill="#fff" stroke="#9fcbb8" />
+      <text class="node-title" x="629" y="622">nginx :8080</text>
+      <text class="node-sub" x="629" y="640">static files · gzip</text>
+      <text class="node-sub" x="629" y="655">immutable asset cache</text>
+      <text class="node-sub" x="629" y="670">SPA fallback</text>
+      <text class="node-sub" x="629" y="685">Docker DNS re-resolve</text>
+      <text class="node-sub" x="629" y="700">only published port</text>
+    </g>
+
+    <!-- Backend nodes -->
+    <g>
+      <rect x="820" y="75" width="540" height="50" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="834" y="97">cmd/server/main.go</text>
+      <text class="node-sub" x="834" y="114">PORT · ALLOWED_ORIGIN · slog JSON · read/write/idle timeouts · -healthcheck flag</text>
+
+      <rect x="820" y="165" width="540" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="834" y="187">Middleware (every route)</text>
+      <text class="node-sub" x="834" y="204">recoverPanics → logRequests → cors (only if ALLOWED_ORIGIN) → ServeMux</text>
+      <text class="node-sub" x="834" y="218">catch-all "/" → JSON 404</text>
+
+      <rect x="820" y="255" width="540" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="834" y="277">POST /api/v1/calculate</text>
+      <text class="node-sub" x="834" y="294">allowMethod (405) → requireJSON (415) → limitBody 4 KiB (413) → decode (400)</text>
+      <text class="node-sub" x="834" y="308">one error shape { error: { code, message } } · fixed check order (D-25)</text>
+
+      <rect x="820" y="345" width="260" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="834" y="367">calculator.Service</text>
+      <text class="node-sub" x="834" y="384">lookup → arity → parse →</text>
+      <text class="node-sub" x="834" y="398">apply → format</text>
+
+      <rect x="1100" y="345" width="260" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="1114" y="367">Registry</text>
+      <text class="node-sub" x="1114" y="384">name → Operation interface</text>
+      <text class="node-sub" x="1114" y="398">add a file + one line (Open/Closed)</text>
+
+      <rect x="820" y="435" width="260" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="834" y="457">number.go</text>
+      <text class="node-sub" x="834" y="474">strict input grammar · ±9999 range</text>
+      <text class="node-sub" x="834" y="488">plain / scientific output · fuzzed</text>
+
+      <rect x="1100" y="435" width="260" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="1114" y="457">9 operations</text>
+      <text class="node-sub" x="1114" y="474">one file each · zero/domain checks</text>
+      <text class="node-sub" x="1114" y="488">finish(): overflow error, underflow → 0</text>
+
+      <rect x="820" y="525" width="260" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="834" y="547">GET /healthz</text>
+      <text class="node-sub" x="834" y="564">liveness for Docker healthcheck</text>
+      <text class="node-sub" x="834" y="578">stateless service</text>
+
+      <rect x="1100" y="525" width="260" height="60" rx="10" fill="#fff" stroke="#a9bfe3" />
+      <text class="node-title" x="1114" y="547">apd decimal context</text>
+      <text class="node-sub" x="1114" y="564">34 significant digits · half-up</text>
+      <text class="node-sub" x="1114" y="578">exponent ±9999 · shared, concurrent-safe</text>
+    </g>
+
+    
+
+    
+  
+    <!-- Legend -->
+    <g>
+      <line x1="40" y1="752" x2="80" y2="752" stroke="#6b7385" stroke-width="1.5" marker-end="url(#arrow)" />
+      <text class="legend" x="88" y="756">call / data flow</text>
+      <line x1="200" y1="752" x2="240" y2="752" stroke="#6b7385" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)" />
+      <text class="legend" x="248" y="756">mounts or uses</text>
+    </g>
+  </svg>

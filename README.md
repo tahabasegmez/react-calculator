@@ -1,26 +1,48 @@
 # Calculator
 
-A full-stack calculator that behaves like the Windows 11 Calculator in Standard mode.
+A full-stack calculator that behaves like the **Windows 11 Calculator in Standard mode**.
 A Go backend performs every calculation with 34-digit decimal arithmetic; a React + TypeScript
-frontend only handles input and display.
+frontend only handles input and display, so `0.1 + 0.2` is exactly `0.3`.
 
-The full specification, including every requirement and design decision, is in
+<p align="center">
+  <img src="docs/screenshot.png" alt="The calculator" width="320">
+</p>
+
+**Contents:**
+[Features](#features) ·
+[Quick start](#quick-start) ·
+[Local development](#local-development) ·
+[Testing](#testing--coverage) ·
+[API](#api-reference) ·
+[Architecture](#architecture) ·
+[Design decisions](#design-decisions) ·
+[Deviations & limitations](#assumptions-deviations-from-windows-and-known-limitations) ·
+[Future work](#trade-offs--future-work) ·
+[AI usage](#ai-usage)
+
+The full specification (requirements, design decisions, API contract, and plan) is in
 [docs/SPEC.md](docs/SPEC.md).
 
-## Overview
+## Features
 
-<img src="docs/screenshot.png" alt="The calculator in a browser" width="300">
+- **Standard mode:** `+ − × ÷`, `%`, `√x`, `x²`, `1/x`, `+/-`, `CE`, `C`, `⌫`, and repeated `=`
+  (`5 + 3 = = =` gives `8`, `11`, `14`).
+- **Immediate execution, like Windows:** `2 + 3 × 4 =` gives `20`.
+- **Exact decimals:** results keep 34 significant digits; the display shows 16 and switches to
+  scientific notation for very large or small values.
+- **History:** the icon at the top right opens past calculations; click one to reuse its result.
+- **Mode menu:** the icon at the top left switches between Standard and a preview of Scientific
+  mode (marked "Soon..").
+- **Keyboard and accessibility:** every key has a shortcut and an accessible name, focus is always
+  visible, and every label meets WCAG AA contrast.
+- **Responsive:** works from 320 px wide, with the same behavior on every device.
 
-- Standard mode: `+ − × ÷`, `%`, `√x`, `x²`, `1/x`, `+/-`, `CE`, `C`, `⌫`, and repeated `=`.
-- Immediate execution like Windows: `2 + 3 × 4 =` gives `20`.
-- Exact decimals: `0.1 + 0.2 = 0.3`. Results keep 34 significant digits internally; the display
-  shows 16.
-- Full keyboard support, including the Windows shortcuts (`@` √x, `q` x², `r` 1/x, `F9` ±).
-- History of calculations: the icon at the top right opens it; click an entry to reuse its result.
-- The display font shrinks for long numbers.
-- A mode menu (top left) switches to a preview of Scientific mode, marked "Soon..".
-- Works from 320 px wide; same behavior on every device.
-- Dark purple design with frosted-glass keys; every label meets WCAG AA contrast.
+| Key | Shortcut | Key | Shortcut |
+|---|---|---|---|
+| Digits, `.` | `0`–`9`, `.` | `=` | `Enter` or `=` |
+| `+ − × ÷` | `+ - * /` | `⌫` | `Backspace` |
+| `%` | `%` | `C` / `CE` | `Escape` / `Delete` |
+| `√x` / `x²` / `1/x` | `@` / `q` / `r` | `+/-` | `F9` |
 
 ## Quick start
 
@@ -30,11 +52,11 @@ Requirements: Docker with Docker Compose v2.
 docker compose up --build
 ```
 
-Open http://localhost:8080. The API is available at the same address.
+Open <http://localhost:8080>. The API is served from the same address.
 
 ## Local development
 
-Prerequisites (versions used during development):
+Versions used during development:
 
 | Tool | Version |
 |---|---|
@@ -49,46 +71,47 @@ Run the backend and the frontend in two terminals:
 cd backend
 go run ./cmd/server
 
-# Terminal 2: UI on http://localhost:5173 (proxies /api to the backend)
+# Terminal 2: UI on http://localhost:5173 (proxies /api and /healthz to the backend)
 cd frontend
 npm ci
 npm run dev
 ```
 
-Backend configuration (environment variables):
+Backend configuration:
 
 | Variable | Default | Purpose |
 |---|---|---|
 | `PORT` | `8080` | Listen port |
-| `ALLOWED_ORIGIN` | empty (CORS off) | Allowed origin when the frontend runs on a different origin |
+| `ALLOWED_ORIGIN` | empty (CORS off) | Allowed origin when the frontend is served from a different origin |
 
 ## Testing & coverage
 
-| | Command | Coverage |
+| | Command | Result |
 |---|---|---|
-| Backend tests | `cd backend && go test ./... -race -cover` | 98.2% of statements |
+| Backend tests | `cd backend && go test ./... -race -cover` | 161 tests and subtests, 98.2% of statements |
 | Backend lint | `cd backend && gofmt -l . && golangci-lint run` | |
-| Frontend tests | `cd frontend && npm run test:coverage` | 99.6% of lines |
+| Frontend tests | `cd frontend && npm run test:coverage` | 199 tests, 99.7% of lines |
 | Frontend checks | `cd frontend && npm run lint && npm run format:check && npm run typecheck` | |
 
-- CI (GitHub Actions) runs all of the above on every push to `main`, plus a Docker build, and
+- **CI** (GitHub Actions) runs all of the above plus a Docker build on every push to `main`, and
   fails if coverage drops below 80% on either side.
-- The backend has table-driven tests for every operation and error, `httptest` tests for every
-  HTTP error code, and a fuzz test for number parsing:
+- **Backend:** table-driven tests for every operation and error, `httptest` tests for every HTTP
+  error code, and a fuzz test for number parsing:
   `cd backend && go test ./internal/calculator -run '^$' -fuzz FuzzParseNumber -fuzztime 30s`.
-- The frontend has one reducer test per row of the key behavior tables in the spec, plus tests for
-  formatting, the API client, the hook, and the components (mouse, keyboard, error states).
+- **Frontend:** one reducer test per row of the key behavior tables in the spec, plus tests for
+  formatting, the API client, the hook, each mode on its own, and the mode shell with fake modes.
 - `-race` needs cgo and a C compiler. On Windows without gcc, run the tests without `-race`;
   CI runs them with it.
 
 ## API reference
 
-The contract is in [docs/openapi.yaml](docs/openapi.yaml). Numbers are JSON strings.
+The contract is in [docs/openapi.yaml](docs/openapi.yaml). Numbers are sent and returned as JSON
+strings.
 
 | Method | Path | Purpose |
 |---|---|---|
 | `POST` | `/api/v1/calculate` | Perform one operation |
-| `GET` | `/healthz` | Health check |
+| `GET` | `/healthz` | Health check: `{"status":"ok"}` |
 
 Operations: `add`, `subtract`, `multiply`, `divide`, `percent_of` (two operands);
 `percent`, `sqrt`, `square`, `reciprocal` (one operand).
@@ -105,8 +128,8 @@ curl -X POST http://localhost:8080/api/v1/calculate \
 # 422 {"error":{"code":"DIVISION_BY_ZERO","message":"Cannot divide by zero"}}
 ```
 
-> **Windows:** in PowerShell, `curl` is an alias for `Invoke-WebRequest`. Use `curl.exe`, and
-> put the JSON in a file (`-d "@body.json"`) to avoid quoting problems.
+> **Windows:** in PowerShell, `curl` is an alias for `Invoke-WebRequest`. Use `curl.exe`, and put
+> the JSON in a file (`-d "@body.json"`) to avoid quoting problems.
 
 Every error has the same shape, `{ "error": { "code": "...", "message": "..." } }`:
 
@@ -118,42 +141,75 @@ Every error has the same shape, `{ "error": { "code": "...", "message": "..." } 
 | 422 | `DIVISION_BY_ZERO`, `UNDEFINED_RESULT` (`0 ÷ 0`), `INVALID_DOMAIN` (√ of a negative), `OVERFLOW` |
 | 500 | `INTERNAL_ERROR` |
 
+When a request has several faults, the first failing check decides the response, in a fixed order
+(SPEC D-25).
+
 ## Architecture
 
+[![Architecture diagram: React frontend, nginx edge, Go backend](docs/architecture.svg)](docs/architecture.svg)
+
+*Click the diagram to open it at full size.*
+
+**What happens when you press `=` after `5 + 3`:**
+
+1. The pure **reducer** decides the key needs the backend and returns the request
+   `add(5, 3)`; the **`useCalculator`** hook blocks further keys and sends it.
+2. **`api/client.ts`** posts `{"operation":"add","operands":["5","3"]}` with a 5-second timeout.
+3. **nginx** serves the frontend and forwards `/api` to the backend on the internal network.
+4. The backend **middleware** recovers panics, logs, and applies CORS; the route checks the method,
+   `Content-Type`, and the 4 KiB body limit, then decodes the JSON.
+5. **`calculator.Service`** looks up `add` in the **registry**, checks the operand count, parses the
+   operands, and computes with **apd** at 34 digits.
+6. The result `"8"` goes back as a string; the reducer stores it at full precision and
+   **`format.ts`** renders the display text without ever converting it to a float.
+
+**Project structure:**
+
 ```
-Development:  Browser ──► Vite dev server :5173 ──/api──► Go backend :8080
-Docker:       Browser ──► nginx :8080 ──/api, /healthz──► Go backend (internal network only)
+backend/
+  cmd/server/              entry point: config, logging, timeouts, -healthcheck flag
+  internal/api/            router, middleware, handlers, JSON errors
+  internal/calculator/     service, registry, one file per operation, number format
+frontend/src/
+  api/                     typed backend client
+  features/calculator/
+    CalculatorShell.tsx    toolbar, mode menu, active mode
+    modes.ts               the list of modes
+    shared/                Display, Keypad, Key, HistoryPanel, ModeMenu, mode contract
+    standard/              Standard mode: reducer, selectors, keyboard map, hook, UI
+    scientific/            Scientific preview
+  utils/format.ts          display formatting
+docs/                      SPEC.md, openapi.yaml, architecture diagram, screenshot
 ```
 
-- **Backend** (`backend/`): `net/http` only, no framework. Two layers:
-  `internal/api` (handlers, middleware, JSON errors) → `internal/calculator` (service, registry,
-  one file per operation, number parsing and formatting with `cockroachdb/apd`).
-  Adding an operation means adding one file and registering it.
-- **Frontend** (`frontend/src/features/calculator/`): a `CalculatorShell` holds the toolbar and
-  the mode menu and shows one mode at a time. Each mode lives in its own folder (`standard/`,
-  `scientific/`) with its own state and shortcuts; `shared/` holds the components every mode
-  uses. Standard mode is a pure reducer plus a `useCalculator` hook that sends the requests.
-  Adding a mode means one new folder and one entry in `modes.ts`.
-- **Docker**: a distroless, non-root backend image and an nginx image that serves the frontend and
+- **Backend:** `net/http` only, no framework, in two layers (`api` → `calculator`). Adding an
+  operation means adding one file and registering it.
+- **Frontend:** a mode-independent shell shows one mode at a time; each mode owns its state,
+  shortcuts, and panels. Adding a mode means one new folder and one entry in `modes.ts`. Shared
+  code may not import a mode (enforced by ESLint).
+- **Docker:** a distroless, non-root backend image and an nginx image that serves the frontend and
   proxies the API. Only nginx is published.
 
 ## Design decisions
 
-The full list with rationale is in [SPEC §6](docs/SPEC.md#6-design-decisions). The most important:
+All decisions with their rationale are in [SPEC §6](docs/SPEC.md#6-design-decisions). The most
+important:
 
 - **All arithmetic on the backend.** The frontend only edits notation: digits, the decimal point,
-  and the sign. Display rounding is the only exception, and it never changes the stored value.
-- **Decimal arithmetic with 34 significant digits** (IEEE 754 decimal128), rounded half away
-  from zero. Numbers travel as JSON strings, so no float ever touches a value.
-- **One endpoint, one operation per request.** The operation name is in the body and maps
-  directly onto the operation registry.
+  and the sign. Rounding for display is the only exception, and it never changes the stored value.
+- **Decimal arithmetic with 34 significant digits** (IEEE 754 decimal128), rounded half away from
+  zero. Numbers travel as JSON strings, so no float ever touches a value.
+- **One endpoint, one operation per request.** The operation name is in the body and maps directly
+  onto the operation registry.
 - **Full precision between steps.** The display shows 16 digits, but the next operation always
   receives the full 34-digit value.
-- **Same origin.** The browser only talks to one origin; a proxy forwards `/api`, so CORS is off
+- **Same origin.** The browser talks to one origin and a proxy forwards `/api`, so CORS is off
   unless `ALLOWED_ORIGIN` is set.
 - **String-based display formatting.** `Intl.NumberFormat` turns values beyond the JavaScript
   number range into `∞`, while results go up to `1e9999`.
 - **Keys are blocked during a request** instead of being queued: simple and deterministic.
+- **Modes as plug-ins.** A small contract (`active`, `keyboardEnabled`, a toolbar slot) lets each
+  calculator mode stay independent of the others.
 
 ## Assumptions, deviations from Windows, and known limitations
 
@@ -165,15 +221,17 @@ The full list with rationale is in [SPEC §6](docs/SPEC.md#6-design-decisions). 
   where Windows (exact rational arithmetic) gives `0`.
 - **Limitation: range.** Results of `1e10000` or more (in magnitude) are an `OVERFLOW` error;
   results below `1e-9999` become `0`.
+- **Limitation: history** is kept in memory per mode, so a reload clears it.
 
 ## Trade-offs & future work
 
-- Not built (deliberately): Scientific and Programmer modes and an expression parser with
-  operator precedence. Scientific mode is only a blurred preview in the mode menu. The registry
-  and the layout-as-data keypad are the extension points.
-- Could-have features not built yet: memory keys, dark theme, a live demo. The history is kept
-  in memory only, so it is lost on reload.
-- Keys are blocked during a request rather than queued; partial blocking is future work.
+- **Scientific mode** is only a preview. Building it needs operator precedence and parentheses, so
+  it will get its own state machine and a `POST /api/v1/evaluate` endpoint that reuses the
+  operation registry. The decimal library has no trigonometric functions, so those must be written
+  at 34-digit precision.
+- **Not built yet:** Programmer mode, memory keys, a light theme, and a live demo. A public
+  deployment should add request rate limiting in nginx first.
+- **Keys are blocked during a request** rather than queued; partial blocking is future work.
 
 ## Credits
 

@@ -650,7 +650,3 @@ Could items start only after step 8.
 | `Intl.NumberFormat` loses precision with string input, or fails on magnitudes beyond the JavaScript number range | Covered by the first formatting tests; fallback: small string-based formatter |
 | Reducer complexity | The key behavior tables define the behavior; implemented test-first, row by row, Must behaviors first |
 | Line-ending differences between development and Linux environments | `.gitattributes` in the first commit |
-
-### Open items
-
-- Live demo hosting platform (free tier) — decided last (NFR-14).
