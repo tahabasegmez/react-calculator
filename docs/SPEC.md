@@ -21,6 +21,8 @@ plan (§12) and the README. Code and tests do not reference them; test names des
 Priority labels: **Must** (required), **Should** (planned), **Could** (only if time remains),
 **Won't** (deliberately out of scope).
 
+✔ marks requirements (§2–§4) and implementation steps (§12) that are implemented and tested.
+
 ---
 
 ## 2. Functional requirements — Frontend
@@ -29,36 +31,37 @@ Priority labels: **Must** (required), **Should** (planned), **Could** (only if t
 
 | ID | Requirement |
 |---|---|
-| FR-01 | The user can enter digits 0–9 and a decimal point. A number contains at most one decimal point. Pressing `.` on empty input produces `0.`. A leading `0` is replaced by the next digit (`0` → `5`). |
-| FR-02 | A number entered by the user has at most 16 digits. A leading `0` before the decimal point, the sign, and the decimal point do not count. Further digits are ignored. |
-| FR-03 | Binary operations `+ − × ÷` and `=` are supported. |
-| FR-04 | Chained operations use **immediate execution** (no operator precedence), as in Windows Standard mode: `2 + 3 × 4 =` → `20`. |
-| FR-05 | `C` resets everything. `CE` clears only the current entry. `⌫` deletes the last digit of the current entry. |
-| FR-06 | `+/-` toggles the sign of the current value. This is a notation edit (D-12). |
-| FR-07 | The display has two lines: the expression on top (e.g. `12 + 5 =`) and the current value or result below. |
-| FR-08 | On a calculation error, the error text for the code (§9) is shown and the keys listed in §9 are disabled. The error state is exited with `C`, `CE`, `⌫`, or a digit key, which resets the whole state including the expression line. |
-| FR-09 | If the backend is unreachable, times out, or returns an unexpected (non-JSON or 5xx) response, the user is informed and the app does not crash (client-side code `NETWORK_ERROR`). |
+| FR-01 ✔ | The user can enter digits 0–9 and a decimal point. A number contains at most one decimal point. Pressing `.` on empty input produces `0.`. A leading `0` is replaced by the next digit (`0` → `5`). |
+| FR-02 ✔ | A number entered by the user has at most 16 digits. A leading `0` before the decimal point, the sign, and the decimal point do not count. Further digits are ignored. |
+| FR-03 ✔ | Binary operations `+ − × ÷` and `=` are supported. |
+| FR-04 ✔ | Chained operations use **immediate execution** (no operator precedence), as in Windows Standard mode: `2 + 3 × 4 =` → `20`. |
+| FR-05 ✔ | `C` resets everything. `CE` clears only the current entry. `⌫` deletes the last digit of the current entry. |
+| FR-06 ✔ | `+/-` toggles the sign of the current value. This is a notation edit (D-12). |
+| FR-07 ✔ | The display has two lines: the expression on top (e.g. `12 + 5 =`) and the current value or result below. |
+| FR-08 ✔ | On a calculation error, the error text for the code (§9) is shown and the keys listed in §9 are disabled. The error state is exited with `C`, `CE`, `⌫`, or a digit key, which resets the whole state including the expression line. |
+| FR-09 ✔ | If the backend is unreachable, times out, or returns an unexpected (non-JSON or 5xx) response, the user is informed and the app does not crash (client-side code `NETWORK_ERROR`). |
 
 ### Should
 
 | ID | Requirement |
 |---|---|
-| FR-10 | Unary operations: `%`, `√x`, `x²`, `1/x`. They apply immediately to the current value. The expression line shows `√(9)`, `sqr(5)`, `1/(5)`, and nests them (`√(sqr(5))`). For `%`, the expression line shows the computed value instead (`200 + 20`). |
-| FR-11 | Percent: with a pending `+` or `−`, `200 + 10 %` → `200 + 20` (calls `percent_of`); `200 + %` → `200 + 400`. With a pending `×` or `÷`, `10 %` → `0.1` (calls `percent`). With no pending operator, `10 %` → `0.1` (calls `percent`) — a deliberate deviation from Windows (D-10). |
-| FR-12 | Full keyboard support, using the Windows shortcuts: digits, `.`, `+ - * /`, `Enter` and `=` (equals), `Backspace` (⌫), `Escape` (C), `Delete` (CE), `%`, `@` (√x), `q` (x²), `r` (1/x), `F9` (+/-). Keys can also be reached with `Tab` and pressed with `Space`. |
-| FR-13 | Responsive layout: fully usable at viewport widths of 320 px and above. Only the layout adapts; behavior does not change. |
-| FR-17 | Results are displayed with at most **16 significant digits**, rounded half away from zero (D-21). Notation follows the display rule in D-22. The backend returns full precision (D-11). |
-| FR-18 | Repeated `=` repeats the last operation with the last right-hand operand: `5 + 3 = = =` → `8`, `11`, `14`. After `5 + 3 =`, typing `7` and `=` gives `10` (`7 + 3`). |
-| FR-19 | Thousands separators are shown in the display (`1,234,567`). |
+| FR-10 ✔ | Unary operations: `%`, `√x`, `x²`, `1/x`. They apply immediately to the current value. The expression line shows `√(9)`, `sqr(5)`, `1/(5)`, and nests them (`√(sqr(5))`). For `%`, the expression line shows the computed value instead (`200 + 20`). |
+| FR-11 ✔ | Percent: with a pending `+` or `−`, `200 + 10 %` → `200 + 20` (calls `percent_of`); `200 + %` → `200 + 400`. With a pending `×` or `÷`, `10 %` → `0.1` (calls `percent`). With no pending operator, `10 %` → `0.1` (calls `percent`) — a deliberate deviation from Windows (D-10). |
+| FR-12 ✔ | Full keyboard support, using the Windows shortcuts: digits, `.`, `+ - * /`, `Enter` and `=` (equals), `Backspace` (⌫), `Escape` (C), `Delete` (CE), `%`, `@` (√x), `q` (x²), `r` (1/x), `F9` (+/-). Keys can also be reached with `Tab` and pressed with `Space`. |
+| FR-13 ✔ | Responsive layout: fully usable at viewport widths of 320 px and above. Only the layout adapts; behavior does not change. |
+| FR-17 ✔ | Results are displayed with at most **16 significant digits**, rounded half away from zero (D-21). Notation follows the display rule in D-22. The backend returns full precision (D-11). |
+| FR-18 ✔ | Repeated `=` repeats the last operation with the last right-hand operand: `5 + 3 = = =` → `8`, `11`, `14`. After `5 + 3 =`, typing `7` and `=` gives `10` (`7 + 3`). |
+| FR-19 ✔ | Thousands separators are shown in the display (`1,234,567`). |
 
 ### Could
 
 | ID | Requirement |
 |---|---|
-| FR-14 | History panel of past calculations. |
+| FR-14 ✔ | History panel of past calculations. |
 | FR-15 | Memory keys: `MC MR M+ M− MS`. |
 | FR-16 | Light and dark theme. |
-| FR-20 | Display font shrinks automatically for long numbers. |
+| FR-20 ✔ | Display font shrinks automatically for long numbers. |
+| FR-21 ✔ | A mode button at the top left opens a pop-up to switch between Standard and Scientific. Scientific shows a blurred, non-functional preview of the scientific keypad with the text "Soon.." (D-29). |
 
 ---
 
@@ -66,14 +69,14 @@ Priority labels: **Must** (required), **Should** (planned), **Could** (only if t
 
 | ID | Requirement |
 |---|---|
-| BR-01 | The API is versioned under `/api/v1/...`. |
-| BR-02 | A single endpoint performs exactly one operation per request (unary or binary). See D-02, D-09. |
-| BR-03 | Supported operations: `add`, `subtract`, `multiply`, `divide`, `percent`, `percent_of`, `sqrt`, `square`, `reciprocal`. |
-| BR-04 | Numbers are received and returned as JSON **strings** in the formats defined in §8 (Number format). |
-| BR-05 | All errors share one JSON format: `{ "error": { "code": "...", "message": "..." } }`. This includes 404 and 405 responses. |
-| BR-06 | HTTP status codes: 400 for malformed or invalid requests; 404, 405, 413, and 415 for their standard meanings; 422 for well-formed requests that are mathematically undefined; 500 for unexpected errors. |
-| BR-07 | Handled edge cases. Calculation level: division by zero, `0 ÷ 0`, reciprocal of zero, square root of a negative number, overflow, underflow, invalid number formats, `NaN`/`Infinity`, unknown operation, wrong operand count. HTTP level: malformed JSON, missing fields, unknown fields, wrong content type, oversized body, unknown path, wrong HTTP method. |
-| BR-08 | `GET /healthz` reports service health (used by Docker and monitoring). |
+| BR-01 ✔ | The API is versioned under `/api/v1/...`. |
+| BR-02 ✔ | A single endpoint performs exactly one operation per request (unary or binary). See D-02, D-09. |
+| BR-03 ✔ | Supported operations: `add`, `subtract`, `multiply`, `divide`, `percent`, `percent_of`, `sqrt`, `square`, `reciprocal`. |
+| BR-04 ✔ | Numbers are received and returned as JSON **strings** in the formats defined in §8 (Number format). |
+| BR-05 ✔ | All errors share one JSON format: `{ "error": { "code": "...", "message": "..." } }`. This includes 404 and 405 responses. |
+| BR-06 ✔ | HTTP status codes: 400 for malformed or invalid requests; 404, 405, 413, and 415 for their standard meanings; 422 for well-formed requests that are mathematically undefined; 500 for unexpected errors. |
+| BR-07 ✔ | Handled edge cases. Calculation level: division by zero, `0 ÷ 0`, reciprocal of zero, square root of a negative number, overflow, underflow, invalid number formats, `NaN`/`Infinity`, unknown operation, wrong operand count. HTTP level: malformed JSON, missing fields, unknown fields, wrong content type, oversized body, unknown path, wrong HTTP method. |
+| BR-08 ✔ | `GET /healthz` reports service health (used by Docker and monitoring). |
 | BR-09 | **Could:** `GET /api/v1/operations` lists supported operations and their arity. |
 
 ---
@@ -84,23 +87,23 @@ NFRs are cross-cutting: unless stated otherwise, every step of the implementatio
 
 | ID | Category | Requirement |
 |---|---|---|
-| NFR-01 | Precision | The backend uses decimal arithmetic, not floating point (`0.1 + 0.2 = 0.3`). |
-| NFR-02 | Extensibility | Each operation implements a common interface and is registered in a registry. Adding an operation does not require changing existing code (Open/Closed principle). |
-| NFR-03 | Extensibility | Frontend calculator logic (reducer) is separate from the UI and reusable with a different keypad (e.g. a future Scientific mode). |
-| NFR-04 | Architecture | Backend is layered: `api` (HTTP) → `calculator` (service, registry, operations). |
-| NFR-05 | Testing | Go: table-driven unit tests. Frontend: Vitest + React Testing Library + user-event. Coverage is measured as **line coverage**; the gate is NFR-17. Logic layers (operations, reducer, formatting) target near-complete coverage as a goal, not a gate. |
-| NFR-06 | Security | Request body is limited to **4 KiB**. No input can make the server panic. Internal error details are logged, never returned to the client. CORS is off by default (same-origin, D-18) and enabled only for an explicitly configured origin. |
-| NFR-07 | Reliability | The service is stateless. |
-| NFR-08 | Accessibility | Keys have descriptive `aria-label`s (e.g. `√x` → "square root"). The display uses `aria-live="polite"`. Visible focus indicator. Text contrast meets WCAG 2.1 AA (at least 4.5:1). Usable by keyboard alone. Touch targets at least 44×44 px. |
-| NFR-09 | Code quality | Go: `gofmt`, `golangci-lint`. Frontend: TypeScript strict mode, ESLint, Prettier. |
-| NFR-10 | Portability | `docker compose up --build` starts the whole system with one command. |
+| NFR-01 ✔ | Precision | The backend uses decimal arithmetic, not floating point (`0.1 + 0.2 = 0.3`). |
+| NFR-02 ✔ | Extensibility | Each operation implements a common interface and is registered in a registry. Adding an operation does not require changing existing code (Open/Closed principle). |
+| NFR-03 ✔ | Extensibility | Frontend calculator logic (reducer) is separate from the UI and reusable with a different keypad (e.g. a future Scientific mode). |
+| NFR-04 ✔ | Architecture | Backend is layered: `api` (HTTP) → `calculator` (service, registry, operations). |
+| NFR-05 ✔ | Testing | Go: table-driven unit tests. Frontend: Vitest + React Testing Library + user-event. Coverage is measured as **line coverage**; the gate is NFR-17. Logic layers (operations, reducer, formatting) target near-complete coverage as a goal, not a gate. |
+| NFR-06 ✔ | Security | Request body is limited to **4 KiB**. No input can make the server panic. Internal error details are logged, never returned to the client. CORS is off by default (same-origin, D-18) and enabled only for an explicitly configured origin. |
+| NFR-07 ✔ | Reliability | The service is stateless. |
+| NFR-08 ✔ | Accessibility | Keys have descriptive `aria-label`s (e.g. `√x` → "square root"). The display uses `aria-live="polite"`. Visible focus indicator. Text contrast meets WCAG 2.1 AA (at least 4.5:1). Usable by keyboard alone. Touch targets at least 44×44 px. |
+| NFR-09 ✔ | Code quality | Go: `gofmt`, `golangci-lint`. Frontend: TypeScript strict mode, ESLint, Prettier. |
+| NFR-10 ✔ | Portability | `docker compose up --build` starts the whole system with one command. |
 | NFR-11 | Documentation | README with setup, run instructions, API examples, and design decisions. `docs/openapi.yaml` describes the API. `PROMPTS.md` lists the AI prompts used. |
-| NFR-12 | Dependencies | Keep dependencies minimal. Backend uses `net/http` from the standard library, no web framework. |
-| NFR-13 | CI | GitHub Actions runs lint, type checks, tests, and coverage on every push to `main`. |
+| NFR-12 ✔ | Dependencies | Keep dependencies minimal. Backend uses `net/http` from the standard library, no web framework. |
+| NFR-13 ✔ | CI | GitHub Actions runs lint, type checks, tests, and coverage on every push to `main`. |
 | NFR-14 | Deployment | **Could:** live demo on a free hosting platform. |
-| NFR-15 | Language | Code, comments, UI text, README, PROMPTS.md, and commit messages are in English. |
-| NFR-16 | Testing | **Should:** a Go fuzz test proves that number parsing never panics on any input. |
-| NFR-17 | Testing | CI fails if line coverage drops below **80%**, checked separately for the backend and the frontend. Entry points and configuration are excluded (backend: `cmd/server`; frontend: `src/main.tsx`, config files, test setup); everything else counts. |
+| NFR-15 ✔ | Language | Code, comments, UI text, README, PROMPTS.md, and commit messages are in English. |
+| NFR-16 ✔ | Testing | **Should:** a Go fuzz test proves that number parsing never panics on any input. |
+| NFR-17 ✔ | Testing | CI fails if line coverage drops below **80%**, checked separately for the backend and the frontend. Entry points and configuration are excluded (backend: `cmd/server`; frontend: `src/main.tsx`, config files, test setup); everything else counts. |
 
 ---
 
@@ -155,6 +158,8 @@ NFRs are cross-cutting: unless stated otherwise, every step of the implementatio
 | D-26 | Display formatting (`format.ts`) uses a small string-based formatter instead of `Intl.NumberFormat`. Rounding stays half away from zero (D-21). Replaces the frontend part of D-21 and the preferred implementation in §9. | `Intl.NumberFormat` turns string input beyond the JavaScript number range into `∞` (`"1e400"` → `∞`, `"-9.5e9999"` → `-∞`), but results go up to `1e9999` (D-21). A string-based formatter never converts the value to a float. |
 | D-27 | History (FR-14): every `=` that calls the backend adds "expression = result", newest first. A history icon button at the top right opens a panel that slides up from the bottom over the calculator. Clicking an entry restores its result and expression (without a repeatable last operation) and closes the panel. A button clears the list. `C` does not clear the history. The history is kept in memory only. While the panel is open, the calculator is inert, `Escape` closes the panel, and the other shortcuts are inactive. | Matches Windows, where history survives `C`. In memory only because persistence is out of scope (§5). Making the calculator inert keeps focus and `Enter` inside the panel. |
 | D-28 | Display font size (FR-20) steps down by the length of the displayed text: up to 12 characters 2.5rem, up to 15 2rem, up to 20 1.5rem, longer 1.25rem. The line height stays fixed. | A simple, testable rule. The longest possible value (`-1.234567890123457e+9999`, 24 characters) fits on one line from 320 px wide, and the keypad does not move when the size changes. |
+| D-29 | Mode switcher (FR-21): the pop-up lists Standard and Scientific and marks the current mode; choosing a mode, `Escape`, or a click outside closes it. Scientific shows a static copy of the Windows Scientific keypad (5 columns, 35 keys) under a CSS blur with "Soon.." on top. The preview has no buttons, is hidden from screen readers (only "Soon.." is read), ignores keyboard shortcuts, and hides the history button. Switching back to Standard keeps the calculator state and history. | Shows where the architecture is heading without building Scientific mode, which stays out of scope (§5). The calculator state stays in memory, so nothing is lost when switching. |
+| D-30 | Frontend mode architecture. `CalculatorShell` owns only the toolbar, the mode menu, and which mode is active. Each mode is a component in its own folder with its own state, keyboard shortcuts, toolbar buttons, and panels, and receives `active`, `keyboardEnabled`, and a toolbar slot (`ModeProps`). Modes are listed in `modes.ts`; a mode is mounted on its first visit and then kept mounted but hidden, so it keeps its state and history. Shared components (`shared/`) must not import a mode or the shell (enforced by ESLint). | Adding a mode means one folder and one entry in `modes.ts`, without changing the shell or other modes. Keeping modes mounted preserves their state without lifting it into the shell. Each mode keeps its own calculation model, because Scientific needs precedence and parentheses that the Standard reducer does not have. |
 
 ---
 
@@ -215,9 +220,11 @@ CORS (only when `ALLOWED_ORIGIN` is set, D-18).
 │   ├── src/
 │   │   ├── api/                    # backend client and API types
 │   │   ├── features/calculator/
-│   │   │   ├── components/         # Calculator, Display, Keypad, Key
-│   │   │   ├── state/              # reducer, actions, state types, keypad layout config
-│   │   │   └── hooks/              # useCalculator
+│   │   │   ├── CalculatorShell.tsx # toolbar, mode menu, active mode (D-30)
+│   │   │   ├── modes.ts            # list of modes: id, label, component
+│   │   │   ├── shared/             # mode contract, Display, Keypad, Key, HistoryPanel, ModeMenu
+│   │   │   ├── standard/           # StandardCalculator; state/ (reducer, keypad layout), hooks/
+│   │   │   └── scientific/         # ScientificCalculator ("Soon.." preview)
 │   │   └── utils/format.ts         # display formatting
 │   ├── nginx.conf
 │   └── Dockerfile
@@ -232,7 +239,7 @@ CORS (only when `ALLOWED_ORIGIN` is set, D-18).
 └── README.md
 ```
 
-Frontend code is organized by feature, not by file type, so a future Scientific mode gets its own folder.
+Frontend code is organized by feature, not by file type, and every calculator mode has its own folder.
 
 ---
 
@@ -343,14 +350,18 @@ HTTP-level details (order of checks when a request has several faults, `Content-
 
 ```
 App
-└── Calculator        ← uses useCalculator; the only stateful component
-    ├── Display       ← expression line + value line, aria-live
-    └── Keypad        ← renders keys from a layout config array
-        └── Key       ← a single button
-(Could: HistoryPanel, MemoryBar)
+└── CalculatorShell          ← toolbar, ModeMenu, which mode is active (D-30)
+    ├── StandardCalculator   ← uses useCalculator; owns its keyboard shortcuts and history
+    │   ├── Display          ← expression line + value line, aria-live
+    │   ├── Keypad           ← renders keys from a layout config array
+    │   │   └── Key          ← a single button
+    │   └── HistoryPanel
+    └── ScientificCalculator ← "Soon.." preview (D-29)
+(Could: MemoryBar)
 ```
 
-Presentational components (`Display`, `Keypad`, `Key`) receive props only and hold no state.
+Presentational components (`Display`, `Keypad`, `Key`, `HistoryPanel`, `ModeMenu`) receive props
+only and hold no calculator state.
 
 ### Keypad layout (Standard mode)
 
@@ -601,16 +612,18 @@ Cross-cutting NFRs (§4) apply to every step and are not listed per row.
 
 | # | Step | Content | Requirements |
 |---|---|---|---|
-| 0 | Project scaffold | Hygiene files, folder structure, `docs/SPEC.md`, `CLAUDE.md`, README stub | §11 |
-| 1 | API contract | `docs/openapi.yaml` from §8 | BR-01–08, D-24 |
-| 2 | Backend operations | Verify the apd API first; operation interface, registry, 9 operations, number format, table-driven tests; CI with backend job | BR-02–04, BR-07 (calculation level), NFR-01–02, D-11, D-20, D-21 |
-| 3 | Backend HTTP | Handler, error format (incl. 404/405), middleware, `/healthz`, `-healthcheck` flag, env config, `slog`, fuzz test | BR-05–08, BR-07 (HTTP level), NFR-06, NFR-16, D-25 |
-| 4 | Frontend setup | Vite + TS strict, ESLint, Prettier, Vitest (with coverage exclusions and an `App` smoke test), dev proxy; CI frontend job | NFR-09, NFR-17, D-18 |
-| 5 | Frontend logic | `format.ts`, API client, reducer (test-first from §9) | FR-01–11, FR-17–19, D-12, D-13, D-20, D-21, D-22, D-26 |
-| 6 | Frontend UI | Components, `useCalculator`, keyboard, accessibility, responsive styles | FR-07–08, FR-12–13, NFR-08 |
-| 7 | Docker | Dockerfiles, `nginx.conf`, `docker-compose.yml`, CI docker job | NFR-10, D-17 |
-| 8 | README | Final README, coverage numbers, screenshot | NFR-11 |
-| 9 | History and font size (Could) | `HistoryPanel`, history in the reducer, history button; font size steps for the value line | FR-14, FR-20, D-27, D-28 |
+| 0 ✔ | Project scaffold | Hygiene files, folder structure, `docs/SPEC.md`, `CLAUDE.md`, README stub | §11 |
+| 1 ✔ | API contract | `docs/openapi.yaml` from §8 | BR-01–08, D-24 |
+| 2 ✔ | Backend operations | Verify the apd API first; operation interface, registry, 9 operations, number format, table-driven tests; CI with backend job | BR-02–04, BR-07 (calculation level), NFR-01–02, D-11, D-20, D-21 |
+| 3 ✔ | Backend HTTP | Handler, error format (incl. 404/405), middleware, `/healthz`, `-healthcheck` flag, env config, `slog`, fuzz test | BR-05–08, BR-07 (HTTP level), NFR-06, NFR-16, D-25 |
+| 4 ✔ | Frontend setup | Vite + TS strict, ESLint, Prettier, Vitest (with coverage exclusions and an `App` smoke test), dev proxy; CI frontend job | NFR-09, NFR-17, D-18 |
+| 5 ✔ | Frontend logic | `format.ts`, API client, reducer (test-first from §9) | FR-01–11, FR-17–19, D-12, D-13, D-20, D-21, D-22, D-26 |
+| 6 ✔ | Frontend UI | Components, `useCalculator`, keyboard, accessibility, responsive styles | FR-07–08, FR-12–13, NFR-08 |
+| 7 ✔ | Docker | Dockerfiles, `nginx.conf`, `docker-compose.yml`, CI docker job | NFR-10, D-17 |
+| 8 ✔ | README | Final README, coverage numbers, screenshot | NFR-11 |
+| 9 ✔ | History and font size (Could) | `HistoryPanel`, history in the reducer, history button; font size steps for the value line | FR-14, FR-20, D-27, D-28 |
+| 10 ✔ | Mode switcher (Could) | `ModeMenu` pop-up, blurred `ScientificPreview` with "Soon.." | FR-21, D-29 |
+| 11 ✔ | Mode architecture | Shell, mode list, mode contract; Standard and Scientific in their own folders; shared components | NFR-03, D-30 |
 
 **Order rationale:** the contract comes first as the single source of truth; the backend precedes the
 frontend because it carries the highest technical risk (precision library); CI is introduced with the

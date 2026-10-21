@@ -1,15 +1,9 @@
+import type { KeypadKey } from '../../shared/components/Keypad'
 import type { Digit, Key } from './types'
 
-export type KeyVariant = 'digit' | 'function' | 'operator' | 'equals'
+export const STANDARD_COLUMNS = 4
 
-export type KeypadKey = {
-  label: string
-  ariaLabel: string
-  action: Key
-  variant: KeyVariant
-}
-
-const digit = (d: Digit): KeypadKey => ({
+const digit = (d: Digit): KeypadKey<Key> => ({
   label: d,
   ariaLabel: d,
   action: { type: 'digit', digit: d },
@@ -17,7 +11,7 @@ const digit = (d: Digit): KeypadKey => ({
 })
 
 /** Standard mode keys, row by row, four per row. */
-export const standardKeypad: KeypadKey[] = [
+export const standardKeypad: KeypadKey<Key>[] = [
   { label: '%', ariaLabel: 'percent', action: { type: 'percent' }, variant: 'function' },
   { label: 'CE', ariaLabel: 'clear entry', action: { type: 'clearEntry' }, variant: 'function' },
   { label: 'C', ariaLabel: 'clear', action: { type: 'clear' }, variant: 'function' },

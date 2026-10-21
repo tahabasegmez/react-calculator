@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { CalculationRequest, ErrorCode } from '../../../api/types'
+import type { CalculationRequest, ErrorCode } from '../../../../api/types'
 import { calculatorReducer, initialState, planRequest } from './reducer'
 import { selectDisplay } from './selectors'
 import type { CalculatorState, Digit, Key } from './types'

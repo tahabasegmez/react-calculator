@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { formatResult } from '../../../utils/format'
-import type { HistoryEntry } from '../state/types'
+import { formatResult } from '../../../../utils/format'
+import type { HistoryEntry } from '../types'
 import styles from './HistoryPanel.module.css'
 
 type HistoryPanelProps = {

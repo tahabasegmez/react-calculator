@@ -1,5 +1,5 @@
-import type { BinaryOperation, CalculationRequest, UnaryOperation } from '../../../api/types'
-import { formatResult } from '../../../utils/format'
+import type { BinaryOperation, CalculationRequest, UnaryOperation } from '../../../../api/types'
+import { formatResult } from '../../../../utils/format'
 import { isKeyDisabled } from './selectors'
 import type { CalculatorAction, CalculatorState, Digit, Key } from './types'
 

@@ -1,0 +1,40 @@
+.calculator {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  background: var(--surface);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions {
+  display: flex;
+}
+
+/* Each mode fills the rest of the calculator; hidden modes stay mounted. */
+.mode {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mode[hidden] {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .calculator {
+    width: 360px;
+    min-height: auto;
+    margin: 2rem auto;
+    border: 1px solid var(--key-border);
+    border-radius: 8px;
+  }
+}

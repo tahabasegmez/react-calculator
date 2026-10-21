@@ -1,4 +1,5 @@
-import type { BinaryOperation, ErrorCode, UnaryOperation } from '../../../api/types'
+import type { BinaryOperation, ErrorCode, UnaryOperation } from '../../../../api/types'
+import type { HistoryEntry } from '../../shared/types'
 
 export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
@@ -38,7 +39,7 @@ export type CalculatorState = {
   history: HistoryEntry[]
 }
 
-export type HistoryEntry = { expression: string; result: string }
+export type { HistoryEntry }
 
 export type CalculatorAction =
   | { type: 'KEY_PRESSED'; key: Key }

@@ -1,10 +1,11 @@
-import { Calculator } from './features/calculator/components/Calculator'
+import { CalculatorShell } from './features/calculator/CalculatorShell'
+import { calculatorModes } from './features/calculator/modes'
 
 function App() {
   return (
     <main>
       <h1 className="visually-hidden">Calculator</h1>
-      <Calculator />
+      <CalculatorShell modes={calculatorModes} />
     </main>
   )
 }

@@ -1,20 +1,32 @@
 import { useEffect, useRef, useState } from 'react'
-import { useCalculator } from '../hooks/useCalculator'
-import { keyFromKeyboard } from '../state/keyboard'
-import { standardKeypad } from '../state/keypadLayout'
-import { isKeyDisabled, selectDisplay } from '../state/selectors'
-import type { HistoryEntry, Key } from '../state/types'
-import styles from './Calculator.module.css'
-import { Display } from './Display'
-import { HistoryPanel } from './HistoryPanel'
-import { Keypad } from './Keypad'
+import { createPortal } from 'react-dom'
+import { Display } from '../shared/components/Display'
+import { HistoryPanel } from '../shared/components/HistoryPanel'
+import { Keypad } from '../shared/components/Keypad'
+import type { ModeProps } from '../shared/mode'
+import type { HistoryEntry } from '../shared/types'
+import { useCalculator } from './hooks/useCalculator'
+import { keyFromKeyboard } from './state/keyboard'
+import { STANDARD_COLUMNS, standardKeypad } from './state/keypadLayout'
+import { isKeyDisabled, selectDisplay } from './state/selectors'
+import type { Key } from './state/types'
+import styles from './StandardCalculator.module.css'
 
 const HISTORY_PANEL_ID = 'history-panel'
 
-export function Calculator() {
+export function StandardCalculator({ active, keyboardEnabled, toolbarActions }: ModeProps) {
   const { state, press, showLoading, selectHistory, clearHistory } = useCalculator()
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [wasActive, setWasActive] = useState(active)
   const historyButton = useRef<HTMLButtonElement>(null)
+
+  // The history panel closes when another mode is shown.
+  if (active !== wasActive) {
+    setWasActive(active)
+    if (!active) {
+      setHistoryOpen(false)
+    }
+  }
 
   function closeHistory() {
     setHistoryOpen(false)
@@ -22,6 +34,9 @@ export function Calculator() {
   }
 
   useEffect(() => {
+    if (!keyboardEnabled) {
+      return
+    }
     function onKeyDown(event: KeyboardEvent) {
       // While the history is open, Escape closes it and other keys keep their normal behavior.
       if (historyOpen) {
@@ -42,7 +57,7 @@ export function Calculator() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [press, historyOpen])
+  }, [keyboardEnabled, press, historyOpen])
 
   function restore(entry: HistoryEntry) {
     selectHistory(entry)
@@ -50,25 +65,29 @@ export function Calculator() {
   }
 
   return (
-    <section className={styles.calculator} aria-label="Calculator">
-      <div className={styles.toolbar}>
-        <button
-          ref={historyButton}
-          type="button"
-          className={styles.historyButton}
-          aria-label="History"
-          title="History"
-          aria-expanded={historyOpen}
-          aria-controls={HISTORY_PANEL_ID}
-          onClick={() => (historyOpen ? closeHistory() : setHistoryOpen(true))}
-        >
-          <HistoryIcon />
-        </button>
-      </div>
+    <>
+      {active &&
+        toolbarActions &&
+        createPortal(
+          <button
+            ref={historyButton}
+            type="button"
+            className={styles.historyButton}
+            aria-label="History"
+            title="History"
+            aria-expanded={historyOpen}
+            aria-controls={HISTORY_PANEL_ID}
+            onClick={() => (historyOpen ? closeHistory() : setHistoryOpen(true))}
+          >
+            <HistoryIcon />
+          </button>,
+          toolbarActions,
+        )}
       <div className={styles.body} inert={historyOpen}>
         <Display expression={state.expression} value={selectDisplay(state)} loading={showLoading} />
         <Keypad
           keys={standardKeypad}
+          columns={STANDARD_COLUMNS}
           isDisabled={(key: Key) => isKeyDisabled(state, key)}
           onPress={(key) => void press(key)}
         />
@@ -82,7 +101,7 @@ export function Calculator() {
           onClose={closeHistory}
         />
       )}
-    </section>
+    </>
   )
 }
 

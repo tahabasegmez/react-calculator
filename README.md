@@ -18,6 +18,7 @@ The full specification, including every requirement and design decision, is in
 - Full keyboard support, including the Windows shortcuts (`@` √x, `q` x², `r` 1/x, `F9` ±).
 - History of calculations: the icon at the top right opens it; click an entry to reuse its result.
 - The display font shrinks for long numbers.
+- A mode menu (top left) switches to a preview of Scientific mode, marked "Soon..".
 - Works from 320 px wide; same behavior on every device.
 
 ## Quick start
@@ -127,9 +128,11 @@ Docker:       Browser ──► nginx :8080 ──/api, /healthz──► Go bac
   `internal/api` (handlers, middleware, JSON errors) → `internal/calculator` (service, registry,
   one file per operation, number parsing and formatting with `cockroachdb/apd`).
   Adding an operation means adding one file and registering it.
-- **Frontend** (`frontend/`): the calculator is a pure reducer (`features/calculator/state`).
-  A `useCalculator` hook sends the requests; the components only render. The keypad is defined
-  as data, so another mode only needs another layout.
+- **Frontend** (`frontend/src/features/calculator/`): a `CalculatorShell` holds the toolbar and
+  the mode menu and shows one mode at a time. Each mode lives in its own folder (`standard/`,
+  `scientific/`) with its own state and shortcuts; `shared/` holds the components every mode
+  uses. Standard mode is a pure reducer plus a `useCalculator` hook that sends the requests.
+  Adding a mode means one new folder and one entry in `modes.ts`.
 - **Docker**: a distroless, non-root backend image and an nginx image that serves the frontend and
   proxies the API. Only nginx is published.
 
@@ -165,7 +168,8 @@ The full list with rationale is in [SPEC §6](docs/SPEC.md#6-design-decisions). 
 ## Trade-offs & future work
 
 - Not built (deliberately): Scientific and Programmer modes and an expression parser with
-  operator precedence. The registry and the layout-as-data keypad are the extension points.
+  operator precedence. Scientific mode is only a blurred preview in the mode menu. The registry
+  and the layout-as-data keypad are the extension points.
 - Could-have features not built yet: memory keys, dark theme, a live demo. The history is kept
   in memory only, so it is lost on reload.
 - Keys are blocked during a request rather than queued; partial blocking is future work.

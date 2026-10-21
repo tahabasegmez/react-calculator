@@ -1,5 +1,6 @@
-import type { KeyVariant } from '../state/keypadLayout'
 import styles from './Key.module.css'
+
+export type KeyVariant = 'digit' | 'function' | 'operator' | 'equals'
 
 type KeyProps = {
   label: string

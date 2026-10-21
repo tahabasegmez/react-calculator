@@ -2,14 +2,19 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { calculate } from '../../../api/client'
-import { standardKeypad } from '../state/keypadLayout'
-import { Calculator } from './Calculator'
+import type { ModeProps } from '../shared/mode'
+import { StandardCalculator } from './StandardCalculator'
+import { standardKeypad } from './state/keypadLayout'
 
 vi.mock('../../../api/client', () => ({ calculate: vi.fn() }))
 const calculateMock = vi.mocked(calculate)
 
+// Stands in for the shell's toolbar slot.
+let toolbar: HTMLElement
+
 afterEach(() => {
   calculateMock.mockReset()
+  toolbar.remove()
 })
 
 const value = () => screen.getByTestId('value').textContent
@@ -17,13 +22,20 @@ const expression = () => screen.getByTestId('expression').textContent
 const key = (name: string) => screen.getByRole('button', { name })
 const requests = () => calculateMock.mock.calls.map(([request]) => request)
 
-function setup() {
-  const user = userEvent.setup()
-  render(<Calculator />)
-  return user
+function props(overrides: Partial<ModeProps> = {}): ModeProps {
+  return { active: true, keyboardEnabled: true, toolbarActions: toolbar, ...overrides }
 }
 
-describe('Calculator', () => {
+function setup(overrides: Partial<ModeProps> = {}) {
+  const user = userEvent.setup()
+  toolbar = document.createElement('div')
+  document.body.append(toolbar)
+  const { rerender } = render(<StandardCalculator {...props(overrides)} />)
+  const update = (next: Partial<ModeProps>) => rerender(<StandardCalculator {...props(next)} />)
+  return Object.assign(user, { update })
+}
+
+describe('Standard mode', () => {
   it('renders every key with an accessible name', () => {
     setup()
     expect(screen.getAllByRole('button')).toHaveLength(standardKeypad.length + 1)
@@ -276,5 +288,42 @@ describe('display font size', () => {
 
     expect(value()).toBe('1,234,567,890,123,456')
     expect(screen.getByTestId('value')).toHaveAttribute('data-size', 'smallest')
+  })
+})
+
+describe('mode contract', () => {
+  it('puts its History button into the toolbar slot', () => {
+    setup()
+    expect(toolbar).toContainElement(key('History'))
+  })
+
+  it('ignores keyboard shortcuts while the keyboard is disabled', async () => {
+    const user = setup({ keyboardEnabled: false })
+
+    await user.keyboard('12')
+    expect(value()).toBe('0')
+
+    user.update({ keyboardEnabled: true })
+    await user.keyboard('12')
+    expect(value()).toBe('12')
+  })
+
+  it('removes its History button while inactive', () => {
+    const user = setup()
+
+    user.update({ active: false, keyboardEnabled: false })
+
+    expect(screen.queryByRole('button', { name: 'History' })).not.toBeInTheDocument()
+  })
+
+  it('closes its history panel when it becomes inactive', async () => {
+    const user = setup()
+    await user.click(key('History'))
+
+    user.update({ active: false, keyboardEnabled: false })
+    user.update({ active: true, keyboardEnabled: true })
+
+    expect(screen.queryByRole('region', { name: 'History' })).not.toBeInTheDocument()
+    expect(key('History')).toHaveAttribute('aria-expanded', 'false')
   })
 })

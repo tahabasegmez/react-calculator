@@ -1,5 +1,5 @@
-import type { ErrorCode } from '../../../api/types'
-import { formatInput, formatResult } from '../../../utils/format'
+import type { ErrorCode } from '../../../../api/types'
+import { formatInput, formatResult } from '../../../../utils/format'
 import type { CalculatorState, Key } from './types'
 
 const errorTexts: Partial<Record<ErrorCode, string>> = {

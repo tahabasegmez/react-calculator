@@ -21,4 +21,21 @@ export default tseslint.config(
       globals: globals.browser,
     },
   },
+  {
+    // Shared calculator code is used by every mode, so it must not depend on any one mode.
+    files: ['src/features/calculator/shared/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/standard/**', '**/scientific/**', '**/modes', '**/CalculatorShell'],
+              message: 'Shared calculator code must not import a mode or the shell.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 )

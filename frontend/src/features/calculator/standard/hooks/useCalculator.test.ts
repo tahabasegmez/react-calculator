@@ -1,12 +1,12 @@
 import { act, renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { calculate } from '../../../api/client'
-import type { CalculationResult } from '../../../api/types'
+import { calculate } from '../../../../api/client'
+import type { CalculationResult } from '../../../../api/types'
 import { selectDisplay } from '../state/selectors'
 import type { Digit, Key } from '../state/types'
 import { useCalculator } from './useCalculator'
 
-vi.mock('../../../api/client', () => ({ calculate: vi.fn() }))
+vi.mock('../../../../api/client', () => ({ calculate: vi.fn() }))
 const calculateMock = vi.mocked(calculate)
 
 afterEach(() => {
