@@ -180,6 +180,20 @@ describe('history panel', () => {
     expect(screen.getByText("There's no history yet")).toBeInTheDocument()
   })
 
+  it('focuses the panel without scrolling, so the slide-in animation is not cancelled', async () => {
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus')
+    const user = setup()
+
+    await user.click(key('History'))
+
+    const panel = screen.getByRole('region', { name: 'History' })
+    const panelFocusCalls = focus.mock.contexts
+      .map((context, i) => [context, focus.mock.calls[i][0]] as const)
+      .filter(([context]) => context === panel)
+    expect(panelFocusCalls).toEqual([[panel, { preventScroll: true }]])
+    focus.mockRestore()
+  })
+
   it('lists calculations and restores one on click', async () => {
     const user = setup()
     await calculateFivePlusThree(user)

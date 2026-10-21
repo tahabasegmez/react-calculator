@@ -15,7 +15,9 @@ export function HistoryPanel({ id, entries, onSelect, onClear, onClose }: Histor
   const panel = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    panel.current?.focus()
+    // Without preventScroll, focusing the panel while it starts below the calculator scrolls the
+    // calculator, which cancels out the slide-in animation.
+    panel.current?.focus({ preventScroll: true })
   }, [])
 
   return (
