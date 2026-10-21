@@ -101,7 +101,7 @@ If a request conflicts with the spec, stop and ask instead of guessing.
 - Backend tests: `cd backend && go test ./... -race -cover`
 - Backend lint: `cd backend && gofmt -l . && golangci-lint run`
 - Frontend tests: `cd frontend && npm test`
-- Frontend checks: `cd frontend && npm run lint && npx tsc --noEmit`
+- Frontend checks: `cd frontend && npm run lint && npm run typecheck`
 - Full stack: `docker compose up --build` → http://localhost:8080
 
 # Workflow

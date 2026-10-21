@@ -566,7 +566,7 @@ Triggers: every push to `main` (NFR-13). Superseded runs are cancelled.
 | Job | Steps |
 |---|---|
 | `backend` | setup-go (cache) → `gofmt` check → `golangci-lint` → `go test -race -coverprofile` → 80% threshold → upload coverage artifact |
-| `frontend` | setup-node (npm cache) → `npm ci` → ESLint → Prettier check → `tsc --noEmit` → Vitest with coverage (80% threshold) → `npm run build` → upload coverage artifact |
+| `frontend` | setup-node (npm cache) → `npm ci` → ESLint → Prettier check → `tsc -b --noEmit` → Vitest with coverage (80% threshold) → `npm run build` → upload coverage artifact |
 | `docker` | `docker compose build` |
 
 ### Repository hygiene
