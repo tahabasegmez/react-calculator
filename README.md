@@ -1,8 +1,8 @@
 # Calculator
 
-A full-stack calculator that behaves like the **Windows 11 Calculator in Standard mode**.
-A Go backend performs every calculation with 34-digit decimal arithmetic; a React + TypeScript
-frontend only handles input and display, so `0.1 + 0.2` is exactly `0.3`.
+A full-stack calculator.
+
+A Go backend and a React + TypeScript frontend only handles input and display.
 
 <p align="center">
   <img src="docs/screenshot.png" alt="The calculator" width="320">
