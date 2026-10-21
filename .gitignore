@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+backend/server
+*.exe
+
+# Coverage
+coverage/
+coverage.out
+*.coverprofile
+
+# Environment
+.env
+.env.*
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
