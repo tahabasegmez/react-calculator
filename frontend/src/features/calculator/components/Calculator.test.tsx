@@ -26,7 +26,8 @@ function setup() {
 describe('Calculator', () => {
   it('renders every key with an accessible name', () => {
     setup()
-    expect(screen.getAllByRole('button')).toHaveLength(24)
+    expect(screen.getAllByRole('button')).toHaveLength(standardKeypad.length + 1)
+    expect(key('History')).toBeInTheDocument()
     for (const { ariaLabel } of standardKeypad) {
       expect(key(ariaLabel)).toBeInTheDocument()
     }
@@ -122,6 +123,8 @@ describe('Calculator', () => {
     const user = setup()
 
     await user.tab()
+    expect(key('History')).toHaveFocus()
+    await user.tab()
     expect(key('percent')).toHaveFocus()
     await user.click(key('7'))
     key('7').focus()
@@ -158,5 +161,106 @@ describe('Calculator', () => {
     await user.keyboard('9q')
 
     expect(value()).toBe('Service unavailable')
+  })
+})
+
+describe('history panel', () => {
+  async function calculateFivePlusThree(user: ReturnType<typeof userEvent.setup>) {
+    calculateMock.mockResolvedValueOnce({ ok: true, result: '8' })
+    await user.keyboard('5+3=')
+  }
+
+  it('opens from the History button and says when it is empty', async () => {
+    const user = setup()
+
+    await user.click(key('History'))
+
+    expect(key('History')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('region', { name: 'History' })).toHaveFocus()
+    expect(screen.getByText("There's no history yet")).toBeInTheDocument()
+  })
+
+  it('lists calculations and restores one on click', async () => {
+    const user = setup()
+    await calculateFivePlusThree(user)
+    await user.keyboard('{Escape}9')
+
+    await user.click(key('History'))
+    await user.click(key('5 + 3 = 8'))
+
+    expect(expression()).toBe('5 + 3 =')
+    expect(value()).toBe('8')
+    expect(screen.queryByRole('region', { name: 'History' })).not.toBeInTheDocument()
+    expect(key('History')).toHaveFocus()
+  })
+
+  it('closes with Escape without clearing the calculator', async () => {
+    const user = setup()
+    await calculateFivePlusThree(user)
+    await user.click(key('History'))
+
+    await user.keyboard('{Escape}')
+
+    expect(screen.queryByRole('region', { name: 'History' })).not.toBeInTheDocument()
+    expect(value()).toBe('8')
+    expect(key('History')).toHaveFocus()
+  })
+
+  it('closes with the History button and with a click outside the panel', async () => {
+    const user = setup()
+
+    await user.click(key('History'))
+    await user.click(key('History'))
+    expect(key('History')).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(key('History'))
+    await user.click(screen.getByTestId('history-backdrop'))
+    expect(screen.queryByRole('region', { name: 'History' })).not.toBeInTheDocument()
+  })
+
+  it('does not pass calculator shortcuts to the keypad while open', async () => {
+    const user = setup()
+    await user.keyboard('12')
+    await user.click(key('History'))
+
+    await user.keyboard('3{Backspace}')
+
+    expect(value()).toBe('12')
+  })
+
+  it('selects an entry with Enter', async () => {
+    const user = setup()
+    await calculateFivePlusThree(user)
+    await user.keyboard('{Escape}')
+    await user.click(key('History'))
+
+    key('5 + 3 = 8').focus()
+    await user.keyboard('{Enter}')
+
+    expect(expression()).toBe('5 + 3 =')
+    expect(calculateMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('clears the history', async () => {
+    const user = setup()
+    await calculateFivePlusThree(user)
+    await user.click(key('History'))
+
+    await user.click(key('Clear history'))
+
+    expect(screen.getByText("There's no history yet")).toBeInTheDocument()
+    expect(value()).toBe('8')
+  })
+})
+
+describe('display font size', () => {
+  it('shrinks the value line for long numbers', async () => {
+    const user = setup()
+    expect(screen.getByTestId('value')).toHaveAttribute('data-size', 'large')
+
+    await user.keyboard('1234567890123456')
+
+    expect(value()).toBe('1,234,567,890,123,456')
+    expect(screen.getByTestId('value')).toHaveAttribute('data-size', 'smallest')
   })
 })

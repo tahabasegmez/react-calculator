@@ -16,6 +16,8 @@ The full specification, including every requirement and design decision, is in
 - Exact decimals: `0.1 + 0.2 = 0.3`. Results keep 34 significant digits internally; the display
   shows 16.
 - Full keyboard support, including the Windows shortcuts (`@` √x, `q` x², `r` 1/x, `F9` ±).
+- History of calculations: the icon at the top right opens it; click an entry to reuse its result.
+- The display font shrinks for long numbers.
 - Works from 320 px wide; same behavior on every device.
 
 ## Quick start
@@ -64,7 +66,7 @@ Backend configuration (environment variables):
 |---|---|---|
 | Backend tests | `cd backend && go test ./... -race -cover` | 98.2% of statements |
 | Backend lint | `cd backend && gofmt -l . && golangci-lint run` | |
-| Frontend tests | `cd frontend && npm run test:coverage` | 99.5% of lines |
+| Frontend tests | `cd frontend && npm run test:coverage` | 99.6% of lines |
 | Frontend checks | `cd frontend && npm run lint && npm run format:check && npm run typecheck` | |
 
 - CI (GitHub Actions) runs all of the above on every push to `main`, plus a Docker build, and
@@ -164,8 +166,8 @@ The full list with rationale is in [SPEC §6](docs/SPEC.md#6-design-decisions). 
 
 - Not built (deliberately): Scientific and Programmer modes and an expression parser with
   operator precedence. The registry and the layout-as-data keypad are the extension points.
-- Could-have features not built yet: history panel, memory keys, dark theme, font that shrinks
-  for long numbers, a live demo.
+- Could-have features not built yet: memory keys, dark theme, a live demo. The history is kept
+  in memory only, so it is lost on reload.
 - Keys are blocked during a request rather than queued; partial blocking is future work.
 
 ## AI usage

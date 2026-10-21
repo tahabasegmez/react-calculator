@@ -34,10 +34,16 @@ export type CalculatorState = {
   justEvaluated: boolean
   status: 'ready' | 'loading' | 'error'
   errorCode: ErrorCode | null
+  /** Completed "=" calculations, newest first. */
+  history: HistoryEntry[]
 }
+
+export type HistoryEntry = { expression: string; result: string }
 
 export type CalculatorAction =
   | { type: 'KEY_PRESSED'; key: Key }
   | { type: 'CALCULATION_STARTED' }
   | { type: 'CALCULATION_SUCCEEDED'; key: Key; result: string }
   | { type: 'CALCULATION_FAILED'; code: ErrorCode }
+  | { type: 'HISTORY_SELECTED'; entry: HistoryEntry }
+  | { type: 'HISTORY_CLEARED' }

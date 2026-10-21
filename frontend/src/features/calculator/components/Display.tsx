@@ -1,4 +1,5 @@
 import styles from './Display.module.css'
+import { valueSize } from './valueSize'
 
 type DisplayProps = {
   expression: string
@@ -12,7 +13,7 @@ export function Display({ expression, value, loading }: DisplayProps) {
       <div className={styles.expression} data-testid="expression">
         {expression}
       </div>
-      <div className={styles.value} data-testid="value">
+      <div className={styles.value} data-testid="value" data-size={valueSize(value)}>
         {loading ? <span className={styles.loading}>Calculating…</span> : value}
       </div>
     </div>

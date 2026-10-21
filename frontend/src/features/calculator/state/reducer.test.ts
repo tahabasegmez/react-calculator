@@ -351,3 +351,87 @@ describe('requests and errors', () => {
     expectScreen(state, '', '7')
   })
 })
+
+describe('history', () => {
+  it('starts empty', () => {
+    expect(initialState.history).toEqual([])
+  })
+
+  it('records every calculated "=" with its expression, newest first', () => {
+    const { state } = run('5 + 3 = = 9 sqrt + 1 =', ['8', '11', '3', '4'])
+    expect(state.history).toEqual([
+      { expression: '√(9) + 1 =', result: '4' },
+      { expression: '8 + 3 =', result: '11' },
+      { expression: '5 + 3 =', result: '8' },
+    ])
+  })
+
+  it('does not record "=" without a calculation, chained results, or unary results', () => {
+    expect(run('5 =').state.history).toEqual([])
+    expect(run('5 + 3 * 9 sqrt', ['8', '3']).state.history).toEqual([])
+  })
+
+  it('does not record failed calculations', () => {
+    const error = failWith('DIVISION_BY_ZERO', run('1 / 0').state)
+    expect(error.history).toEqual([])
+  })
+
+  it('keeps the history when C resets the calculator', () => {
+    const { state } = run('5 + 3 = C', ['8'])
+    expect(state.history).toEqual([{ expression: '5 + 3 =', result: '8' }])
+    expect({ ...state, history: [] }).toEqual(initialState)
+  })
+
+  it('keeps the history when leaving the error state', () => {
+    const calculated = run('5 + 3 =', ['8']).state
+    const error = failWith('DIVISION_BY_ZERO', run('1 / 0', [], calculated).state)
+    expect(run('C', [], error).state.history).toEqual(calculated.history)
+    expect(run('7', [], error).state.history).toEqual(calculated.history)
+  })
+
+  it('restores a selected entry as a result with its expression', () => {
+    const { state } = run('5 + 3 = 2 * 4 =', ['8', '8'])
+    const entry = state.history[1]
+    const typing = run('6 +', [], state).state
+
+    const restored = calculatorReducer(typing, { type: 'HISTORY_SELECTED', entry })
+
+    expectScreen(restored, '5 + 3 =', '8')
+    expect(restored.pendingOperator).toBeNull()
+    expect(run('2', [], restored).state.expression).toBe('')
+    expect(run('+ 1 =', ['9'], restored).requests).toEqual([
+      { operation: 'add', operands: ['8', '1'] },
+    ])
+  })
+
+  it('does not repeat an earlier operation with "=" after restoring an entry', () => {
+    const { state } = run('5 + 3 =', ['8'])
+    const restored = calculatorReducer(state, { type: 'HISTORY_SELECTED', entry: state.history[0] })
+    expect(run('=', [], restored).requests).toEqual([])
+  })
+
+  it('restores an entry from the error state', () => {
+    const calculated = run('5 + 3 =', ['8']).state
+    const error = failWith('DIVISION_BY_ZERO', run('1 / 0', [], calculated).state)
+    const restored = calculatorReducer(error, {
+      type: 'HISTORY_SELECTED',
+      entry: calculated.history[0],
+    })
+    expect(restored.status).toBe('ready')
+    expectScreen(restored, '5 + 3 =', '8')
+  })
+
+  it('ignores a selected entry while a request is in flight', () => {
+    const { state } = run('5 + 3 =', ['8'])
+    const loading = calculatorReducer(state, { type: 'CALCULATION_STARTED' })
+    expect(calculatorReducer(loading, { type: 'HISTORY_SELECTED', entry: state.history[0] })).toBe(
+      loading,
+    )
+  })
+
+  it('clears the history without changing the calculator', () => {
+    const { state } = run('5 + 3 =', ['8'])
+    const cleared = calculatorReducer(state, { type: 'HISTORY_CLEARED' })
+    expect(cleared).toEqual({ ...state, history: [] })
+  })
+})

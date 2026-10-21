@@ -30,7 +30,14 @@ export const initialState: CalculatorState = {
   justEvaluated: false,
   status: 'ready',
   errorCode: null,
+  history: [],
 }
+
+// Resets the calculator but keeps the history.
+const reset = (state: CalculatorState): CalculatorState => ({
+  ...initialState,
+  history: state.history,
+})
 
 // The outcome of a key: either a new state, or a backend request plus how to apply its result.
 type Step =
@@ -59,7 +66,7 @@ export function calculatorReducer(
         return state
       }
       if (state.status === 'error') {
-        return key.type === 'digit' ? inputDigit(initialState, key.digit) : initialState
+        return key.type === 'digit' ? inputDigit(reset(state), key.digit) : reset(state)
       }
       const step = keyStep(state, key)
       return step.kind === 'local' ? step.state : state
@@ -73,6 +80,19 @@ export function calculatorReducer(
     }
     case 'CALCULATION_FAILED':
       return { ...state, status: 'error', errorCode: action.code }
+    case 'HISTORY_SELECTED':
+      if (state.status === 'loading') {
+        return state
+      }
+      return {
+        ...reset(state),
+        value: action.entry.result,
+        entry: 'result',
+        expression: action.entry.expression,
+        justEvaluated: true,
+      }
+    case 'HISTORY_CLEARED':
+      return { ...state, history: [] }
   }
 }
 
@@ -87,7 +107,7 @@ function keyStep(state: CalculatorState, key: Key): Step {
     case 'clearEntry':
       return local(clearEntry(state))
     case 'clear':
-      return local(initialState)
+      return local(reset(state))
     case 'negate':
       return local(negate(state))
     case 'operator':
@@ -227,6 +247,7 @@ function evaluated(
     expression,
     lastOperation,
     justEvaluated: true,
+    history: [{ expression, result }, ...state.history],
   }
 }
 

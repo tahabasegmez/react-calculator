@@ -15,11 +15,24 @@
 }
 
 .value {
-  min-height: 1.25em;
+  /* Fixed height in rem, so smaller font sizes do not move the keypad. */
+  min-height: 3rem;
   font-size: 2.5rem;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 3rem;
   overflow-wrap: anywhere;
+}
+
+.value[data-size='medium'] {
+  font-size: 2rem;
+}
+
+.value[data-size='small'] {
+  font-size: 1.5rem;
+}
+
+.value[data-size='smallest'] {
+  font-size: 1.25rem;
 }
 
 .loading {

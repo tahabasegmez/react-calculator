@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { calculate } from '../../../api/client'
 import { calculatorReducer, initialState, planRequest } from '../state/reducer'
-import type { Key } from '../state/types'
+import type { HistoryEntry, Key } from '../state/types'
 
 const LOADING_INDICATOR_DELAY_MS = 300
 
@@ -46,5 +46,13 @@ export function useCalculator() {
     [state],
   )
 
-  return { state, press, showLoading }
+  const selectHistory = useCallback((entry: HistoryEntry) => {
+    if (!inFlight.current) {
+      dispatch({ type: 'HISTORY_SELECTED', entry })
+    }
+  }, [])
+
+  const clearHistory = useCallback(() => dispatch({ type: 'HISTORY_CLEARED' }), [])
+
+  return { state, press, showLoading, selectHistory, clearHistory }
 }

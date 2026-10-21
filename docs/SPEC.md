@@ -153,6 +153,8 @@ NFRs are cross-cutting: unless stated otherwise, every step of the implementatio
 | D-24 | `docs/SPEC.md` takes precedence over `docs/openapi.yaml`. A discrepancy is a bug fixed in both files in the same commit. | One source of truth. |
 | D-25 | HTTP request checks run in this order; the first failing check decides the response: unknown path (404) → wrong method (405) → `Content-Type` (415) → body size (413) → JSON syntax (`INVALID_JSON`) → fields and types (`VALIDATION_ERROR`) → operation name → operand count → operand format → calculation. `Content-Type` is compared by media type, so parameters such as `charset=utf-8` are accepted. When `ALLOWED_ORIGIN` is set, a CORS preflight (`OPTIONS` with `Access-Control-Request-Method`) gets 204 before routing; otherwise `OPTIONS` gets 405. | Cheap checks run first, and every request gets exactly one deterministic error that tests can rely on. Many clients send a `charset` parameter. Answering preflight before routing keeps CORS independent of the routes. |
 | D-26 | Display formatting (`format.ts`) uses a small string-based formatter instead of `Intl.NumberFormat`. Rounding stays half away from zero (D-21). Replaces the frontend part of D-21 and the preferred implementation in §9. | `Intl.NumberFormat` turns string input beyond the JavaScript number range into `∞` (`"1e400"` → `∞`, `"-9.5e9999"` → `-∞`), but results go up to `1e9999` (D-21). A string-based formatter never converts the value to a float. |
+| D-27 | History (FR-14): every `=` that calls the backend adds "expression = result", newest first. A history icon button at the top right opens a panel that slides up from the bottom over the calculator. Clicking an entry restores its result and expression (without a repeatable last operation) and closes the panel. A button clears the list. `C` does not clear the history. The history is kept in memory only. While the panel is open, the calculator is inert, `Escape` closes the panel, and the other shortcuts are inactive. | Matches Windows, where history survives `C`. In memory only because persistence is out of scope (§5). Making the calculator inert keeps focus and `Enter` inside the panel. |
+| D-28 | Display font size (FR-20) steps down by the length of the displayed text: up to 12 characters 2.5rem, up to 15 2rem, up to 20 1.5rem, longer 1.25rem. The line height stays fixed. | A simple, testable rule. The longest possible value (`-1.234567890123457e+9999`, 24 characters) fits on one line from 320 px wide, and the keypad does not move when the size changes. |
 
 ---
 
@@ -608,6 +610,7 @@ Cross-cutting NFRs (§4) apply to every step and are not listed per row.
 | 6 | Frontend UI | Components, `useCalculator`, keyboard, accessibility, responsive styles | FR-07–08, FR-12–13, NFR-08 |
 | 7 | Docker | Dockerfiles, `nginx.conf`, `docker-compose.yml`, CI docker job | NFR-10, D-17 |
 | 8 | README | Final README, coverage numbers, screenshot | NFR-11 |
+| 9 | History and font size (Could) | `HistoryPanel`, history in the reducer, history button; font size steps for the value line | FR-14, FR-20, D-27, D-28 |
 
 **Order rationale:** the contract comes first as the single source of truth; the backend precedes the
 frontend because it carries the highest technical risk (precision library); CI is introduced with the
