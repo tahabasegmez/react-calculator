@@ -1,6 +1,16 @@
 :root {
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
+
+  --surface: #f3f3f3;
+  --text: #1a1a1a;
+  --text-muted: #555555;
+  --key-digit: #ffffff;
+  --key-function: #e6e6e6;
+  --key-border: #cfcfcf;
+  --accent: #0a5fb4;
+  --accent-text: #ffffff;
+  --focus: #0a5fb4;
 }
 
 *,
@@ -11,4 +21,15 @@
 
 body {
   margin: 0;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
