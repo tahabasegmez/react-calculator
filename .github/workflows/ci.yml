@@ -80,3 +80,9 @@ jobs:
         with:
           name: frontend-coverage
           path: frontend/coverage/
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker compose build
